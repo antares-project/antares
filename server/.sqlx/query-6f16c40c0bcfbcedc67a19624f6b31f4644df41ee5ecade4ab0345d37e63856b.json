@@ -1,0 +1,56 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            file.id as \"id!: Uuid\",\n\t\t\tfile.name,\n            file.hash as \"hash!: crypto::Hash32\",\n            file.size,\n            file.mime_type,\n            file.counter,\n\t\t\tfile.created_at as \"created_at!: time::OffsetDateTime\"\n        FROM\n            files file\n        INNER JOIN attachments\n\t\t\tattachment\n        ON\n\t\t\tattachment.file_id = file.id\n        WHERE\n            attachment.message_id = ?\n        ;",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: Uuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "name",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "hash!: crypto::Hash32",
+        "ordinal": 2,
+        "type_info": "Blob"
+      },
+      {
+        "name": "size",
+        "ordinal": 3,
+        "type_info": "Integer"
+      },
+      {
+        "name": "mime_type",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "counter",
+        "ordinal": 5,
+        "type_info": "Integer"
+      },
+      {
+        "name": "created_at!: time::OffsetDateTime",
+        "ordinal": 6,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "6f16c40c0bcfbcedc67a19624f6b31f4644df41ee5ecade4ab0345d37e63856b"
+}

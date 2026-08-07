@@ -1,0 +1,32 @@
+{
+  "db_name": "SQLite",
+  "query": "\n\t\t\tSELECT\n\t\t\t\tid as \"id!: Uuid\",\n\t\t\t\tname,\n\t\t\t\tcreated_at as \"created_at!: time::OffsetDateTime\"\n\t\t\tFROM \n\t\t\t\tchannels\n\t\t\tWHERE\n\t\t\t\tid = ?\n\t\t;",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: Uuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "name",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "created_at!: time::OffsetDateTime",
+        "ordinal": 2,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "7fe550e02e311b4d0b69b317eed27ebcc982eb5723f5334fd7b4d8aa3492213b"
+}

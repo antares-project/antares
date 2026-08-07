@@ -1,0 +1,56 @@
+{
+  "db_name": "SQLite",
+  "query": "\n\t\t\tINSERT INTO files\n\t\t\t\t(id, name, hash, size, mime_type, created_at)\n\t\t\tVALUES\n\t\t\t\t(?, ?, ?, ?, ?, ?)\n\t\t\tRETURNING\n\t\t\t\tid as \"id!: Uuid\",\n\t\t\t\tname,\n                hash as \"hash!: crypto::Hash32\",\n                size,\n                mime_type,\n                counter,\n\t\t\t\tcreated_at as \"created_at!: time::OffsetDateTime\"\n\t\t;",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: Uuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "name",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "hash!: crypto::Hash32",
+        "ordinal": 2,
+        "type_info": "Blob"
+      },
+      {
+        "name": "size",
+        "ordinal": 3,
+        "type_info": "Integer"
+      },
+      {
+        "name": "mime_type",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "counter",
+        "ordinal": 5,
+        "type_info": "Integer"
+      },
+      {
+        "name": "created_at!: time::OffsetDateTime",
+        "ordinal": 6,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 6
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "cd02104e73b9fb298deb68052a4a8e3e97445ca7d9712394db7eb485617414ae"
+}
