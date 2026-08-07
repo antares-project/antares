@@ -8,7 +8,7 @@ on:
     branches: [ "main" ]
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -88,6 +88,15 @@ jobs:
         name: antares-rpm
         path: client/src-tauri/target/release/bundle/rpm/*.rpm
         if-no-files-found: error
+
+    - name: Release nightly
+      uses: softprops/action-gh-release@v1
+      with:
+        prerelease: true
+        name: nightly
+        tag_name: nightly
+        files: client/src-tauri/target/release/bundle/appimage/*.AppImage, client/src-tauri/target/release/bundle/deb/*.deb, client/src-tauri/target/release/bundle/rpm/*.rpm
+        fail_on_unmatched_files: true
 
   deploy-pages:
     runs-on: ubuntu-latest
