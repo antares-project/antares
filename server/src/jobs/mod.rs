@@ -61,9 +61,7 @@ async fn dns_publisher_job(app: app::AppState) -> error::Result<()> {
 		.https(name.clone(), svcb, ttl)
 		.sign(&keypair)?;
 
-	let client = pkarr::Client::builder().build()?;
-
 	create_interval!(3_600_000, {
-		client.publish(&packet, None).await?;
+		app.pkdns.publish(&packet, None).await?;
 	});
 }
