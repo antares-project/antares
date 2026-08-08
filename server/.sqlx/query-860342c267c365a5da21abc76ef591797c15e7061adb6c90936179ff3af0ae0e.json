@@ -1,0 +1,38 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            INSERT INTO attachments\n                (id, message_id, file_id, created_at)\n            VALUES\n                (?, ?, ?, ?)\n            RETURNING\n                id as \"id!: Uuid\",\n                message_id as \"message_id!: Uuid\",\n                file_id as \"file_id!: Uuid\",\n                created_at as \"created_at!: time::OffsetDateTime\"\n            ;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: Uuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "message_id!: Uuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "file_id!: Uuid",
+        "ordinal": 2,
+        "type_info": "Blob"
+      },
+      {
+        "name": "created_at!: time::OffsetDateTime",
+        "ordinal": 3,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "860342c267c365a5da21abc76ef591797c15e7061adb6c90936179ff3af0ae0e"
+}

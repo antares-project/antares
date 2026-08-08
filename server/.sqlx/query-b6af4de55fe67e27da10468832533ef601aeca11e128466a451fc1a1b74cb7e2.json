@@ -1,0 +1,56 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            UPDATE\n\t\t\t\tfiles\n            SET\n                counter = counter + 1\n            WHERE\n                id = ?\n            RETURNING\n                id as \"id!: Uuid\",\n\t\t\t\tname,\n                hash as \"hash!: crypto::Hash32\",\n                size,\n                mime_type,\n                counter,\n\t\t\t\tcreated_at as \"created_at!: time::OffsetDateTime\"\n        ;",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: Uuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "name",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "hash!: crypto::Hash32",
+        "ordinal": 2,
+        "type_info": "Blob"
+      },
+      {
+        "name": "size",
+        "ordinal": 3,
+        "type_info": "Integer"
+      },
+      {
+        "name": "mime_type",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "counter",
+        "ordinal": 5,
+        "type_info": "Integer"
+      },
+      {
+        "name": "created_at!: time::OffsetDateTime",
+        "ordinal": 6,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "b6af4de55fe67e27da10468832533ef601aeca11e128466a451fc1a1b74cb7e2"
+}

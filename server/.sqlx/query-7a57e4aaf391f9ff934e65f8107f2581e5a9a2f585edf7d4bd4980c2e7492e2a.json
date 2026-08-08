@@ -1,0 +1,38 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            INSERT INTO messages\n                (id, channel_id, content, created_at)\n            VALUES\n                (?, ?, ?, ?)\n            RETURNING\n                id as \"id!: Uuid\",\n                channel_id as \"channel_id!: Uuid\",\n                content as \"content!\",\n\t\t\t\tcreated_at as \"created_at!: time::OffsetDateTime\"\n            ;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: Uuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "channel_id!: Uuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "content!",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "created_at!: time::OffsetDateTime",
+        "ordinal": 3,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "7a57e4aaf391f9ff934e65f8107f2581e5a9a2f585edf7d4bd4980c2e7492e2a"
+}

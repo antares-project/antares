@@ -1,0 +1,38 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            DELETE FROM\n                attachments\n            WHERE\n                id = ?\n            RETURNING\n                id as \"id!: Uuid\",\n                message_id as \"message_id!: Uuid\",\n                file_id as \"file_id!: Uuid\",\n                created_at as \"created_at!: time::OffsetDateTime\"\n            ;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: Uuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "message_id!: Uuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "file_id!: Uuid",
+        "ordinal": 2,
+        "type_info": "Blob"
+      },
+      {
+        "name": "created_at!: time::OffsetDateTime",
+        "ordinal": 3,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "0bf40781ec91e854f6170751895ff78388198f92f2384a474b7917086bdd0610"
+}

@@ -1,0 +1,6 @@
+/target
+files/
+.env*
+!.env*.example
+
+**.db*
