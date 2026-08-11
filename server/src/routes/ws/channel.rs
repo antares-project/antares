@@ -49,7 +49,7 @@ pub async fn create_channel(app: wspc::App, socket: wspc::Socket, params: wspc::
 
 	let channel: Channel = db::create_channel(&state.db_pool, &params.name, db::ChannelType::Text).await?.into();
 
-	app.room("events").emit("channelCreated", (&channel,))?;
+	app.room("global").emit("channelCreated", (&channel,))?;
 
 	Ok(channel)
 }
@@ -63,7 +63,7 @@ pub async fn delete_channel(app: wspc::App, socket: wspc::Socket, params: wspc::
 
 	let channel: Channel = db::delete_channel(&state.db_pool, params.channel_id).await?.into();
 
-	app.room("events").emit("channelDeleted", (&channel,))?;
+	app.room("global").emit("channelDeleted", (&channel,))?;
 
 	Ok(channel)
 }

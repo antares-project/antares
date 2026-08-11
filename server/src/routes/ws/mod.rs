@@ -13,6 +13,7 @@ pub fn router(state: &app::AppState) -> MethodRouter<app::AppState> {
 	app.set_state(state.clone());
 
 	app.on("connect", life_cycle::connect);
+	app.on("disconnect", life_cycle::disconnect);
 
 	app.on("auth", auth::auth);
 	app.on("requestChallenge", auth::request_challenge);
