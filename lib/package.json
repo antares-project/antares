@@ -4,28 +4,28 @@
   "description": "",
   "exports": {
     ".": {
-      "import": "./build/index.js",
-      "require": "./build/index.cjs"
+      "types": "./build/index.svelte.d.ts",
+      "default": "./build/index.svelte.js"
     },
     "./crypto": {
-      "import": "./build/crypto.js",
-      "require": "./build/crypto.cjs"
+      "types": "./build/crypto.d.ts",
+      "default": "./build/crypto.js"
     },
     "./http": {
-      "import": "./build/http.js",
-      "require": "./build/http.cjs"
+      "types": "./build/http.d.ts",
+      "default": "./build/http.js"
     },
     "./utils": {
-      "import": "./build/utils.js",
-      "require": "./build/utils.cjs"
+      "types": "./build/utils.d.ts",
+      "default": "./build/utils.js"
     },
     "./pkdns": {
-      "import": "./build/pkdns.js",
-      "require": "./build/pkdns.cjs"
+      "types": "./build/pkdns.d.ts",
+      "default": "./build/pkdns.js"
     }
   },
   "scripts": {
-    "build": "tsc"
+    "build": "svelte-package --input ./src --output ./build"
   },
   "license": "0BSD or UNLICENSED",
   "type": "module",
@@ -37,7 +37,10 @@
     "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
-    "@types/jsonwebtoken": "^9.0.10",
-    "typescript": "^6.0.3"
+    "@sveltejs/package": "^2.4.0",
+    "@types/jsonwebtoken": "^9.0.10"
+  },
+  "peerDependencies": {
+    "svelte": "^5.0.0"
   }
 }

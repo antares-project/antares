@@ -10,9 +10,9 @@ type Session = {
 }
 
 export class Client {
-    private _url: string;
+    private _url = $state("");
     private _rpc: JsonRPCClient<ClientToServerEvents, ServerToClientEvents>;
-    private _session?: Session;
+    private _session = $state<Session | undefined>();
 
     public onOpen?: () => void;
     public onClose?: () => void;

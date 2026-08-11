@@ -6,5 +6,8 @@
     "outDir": "./build",
     "strict": true,
     "declaration": true,
+    "types": [
+      "svelte"
+    ]
   }
 }
