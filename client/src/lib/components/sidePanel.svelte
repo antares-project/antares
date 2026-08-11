@@ -25,7 +25,5 @@
             />
         {/each}
     </div>
-    <button onclick={onAddServer} class="h-12 w-12 text-center cursor-pointer"
-        >+</button
-    >
+    <button onclick={onAddServer} class="h-12 w-12 text-center cursor-pointer">+</button>
 </aside>

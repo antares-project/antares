@@ -2,8 +2,8 @@
     import { goto } from "$app/navigation";
     import { useAuth } from "$lib/auth";
     import { info } from "$lib/log";
-    import { sha256, sign } from "antares-lib/dist/crypto";
-    import { stringToUint8Array } from "antares-lib/dist/utils";
+    import { sha256, sign } from "antares-lib/crypto";
+    import { stringToUint8Array } from "antares-lib/utils";
     import { useStorage } from "$lib/storage.svelte";
     import { writable } from "svelte/store";
     import { onMount } from "svelte";

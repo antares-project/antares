@@ -62,12 +62,7 @@
 			class="flex gap-2 rounded-sm bg-gray-800 p-2 text-white border border-gray-600"
 		>
 			<p class="truncate">{toast.msg}</p>
-			<button
-				onclick={() => cancel(id)}
-				class="flex items-center justify-center h-6 w-6 rounded-sm bg-gray-600"
-			>
-				<Fa icon={faX}></Fa></button
-			>
+			<button onclick={() => cancel(id)} class="flex items-center justify-center h-6 w-6 rounded-sm bg-gray-600"> <Fa icon={faX}></Fa></button>
 		</div>
 	{/each}
 </div>

@@ -2,11 +2,30 @@
   "name": "antares-lib",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./build/index.js",
+      "require": "./build/index.cjs"
+    },
+    "./crypto": {
+      "import": "./build/crypto.js",
+      "require": "./build/crypto.cjs"
+    },
+    "./http": {
+      "import": "./build/http.js",
+      "require": "./build/http.cjs"
+    },
+    "./utils": {
+      "import": "./build/utils.js",
+      "require": "./build/utils.cjs"
+    },
+    "./pkdns": {
+      "import": "./build/pkdns.js",
+      "require": "./build/pkdns.cjs"
+    }
+  },
   "scripts": {
-    "build": "tsc",
-    "prepare": "tsc"
+    "build": "tsc"
   },
   "license": "0BSD or UNLICENSED",
   "type": "module",

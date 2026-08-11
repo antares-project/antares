@@ -3,7 +3,7 @@
     import { Client, type Message } from "antares-lib";
     import Fa from "svelte-fa";
     import { faUpload } from "@fortawesome/free-solid-svg-icons";
-    import { postFiles } from "antares-lib/dist/http";
+    import { postFiles } from "antares-lib/http";
     import FilePreview from "./filePreview.svelte";
     import Msg from "./message.svelte";
     import Loading from "./loading.svelte";
