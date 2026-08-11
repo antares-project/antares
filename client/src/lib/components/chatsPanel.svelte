@@ -4,6 +4,8 @@
     import type { Writable } from "svelte/store";
     import { useAuth } from "$lib/auth";
     import { push } from "./toast.svelte";
+    import Fa from "svelte-fa";
+    import { faHashtag, faMicrophone, faVolume } from "@fortawesome/free-solid-svg-icons";
 
     const {
         client,
@@ -35,7 +37,11 @@
                 onclick={() => selectChannel(channel)}
                 class={`cursor-pointer flex items-center p-2 rounded-md hover:bg-gray-800 ${client.currentChannel?.id === channel.id ? "bg-gray-800" : ""}`}
             >
-                <span># {channel.name}</span>
+                {#if channel.type === "Text"}
+                    <span class="flex items-center gap-0.5"><Fa icon={faHashtag} /> {channel.name}</span>
+                {:else}
+                    <span class="flex items-center gap-0.5"><Fa icon={faVolume} /> {channel.name}</span>
+                {/if}
             </button>
         {/each}
     </div>

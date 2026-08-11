@@ -6,10 +6,19 @@ use uuid::Uuid;
 use std::fmt;
 use std::ops;
 
+#[derive(Debug, Clone, Copy, serde::Serialize)]
+#[repr(u8)]
+pub enum ChannelType {
+	Text = 0,
+	Voice = 1,
+}
+
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct Channel {
 	pub id: Uuid,
 	pub name: String,
+	#[serde(rename = "type")]
+	pub r#type: ChannelType,
 }
 
 #[derive(Debug, serde::Deserialize)]
@@ -38,7 +47,7 @@ pub async fn create_channel(app: wspc::App, socket: wspc::Socket, params: wspc::
 		return Err(error::Error::Unauthorized);
 	}
 
-	let channel: Channel = db::create_channel(&state.db_pool, &params.name).await?.into();
+	let channel: Channel = db::create_channel(&state.db_pool, &params.name, db::ChannelType::Text).await?.into();
 
 	app.room("events").emit("channelCreated", (&channel,))?;
 
@@ -95,7 +104,7 @@ impl fmt::Display for ChannelIdentifier {
 
 impl ops::Deref for ChannelIdentifier {
 	type Target = Uuid;
-	#[inline]
+	#[inline(always)]
 	fn deref(&self) -> &Self::Target {
 		&self.0
 	}
@@ -104,6 +113,20 @@ impl ops::Deref for ChannelIdentifier {
 impl From<db::Channel> for Channel {
 	#[inline(always)]
 	fn from(value: db::Channel) -> Self {
-		Self { id: value.id, name: value.name }
+		Self {
+			id: value.id,
+			name: value.name,
+			r#type: value.r#type.into(),
+		}
+	}
+}
+
+impl From<db::ChannelType> for ChannelType {
+	#[inline(always)]
+	fn from(value: db::ChannelType) -> Self {
+		match value {
+			db::ChannelType::Text => Self::Text,
+			db::ChannelType::Voice => Self::Voice,
+		}
 	}
 }

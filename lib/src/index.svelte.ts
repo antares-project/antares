@@ -121,9 +121,12 @@ export class Client {
     }
 }
 
+export type ChannelType = "Text" | "Voice";
+
 export interface Channel {
     id: string,
     name: string,
+    type: ChannelType,
 }
 
 export interface Message {
