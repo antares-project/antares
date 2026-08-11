@@ -1,4 +1,4 @@
-import { parseErr, type Result } from "./error";
+import { parseErr } from "./error";
 
 export function clamp(value: number, min: number, max: number) {
 	return Math.min(Math.max(value, min), max);
