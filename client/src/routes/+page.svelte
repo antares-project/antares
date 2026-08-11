@@ -5,7 +5,6 @@
     import { sha256, sign } from "antares-lib/crypto";
     import { stringToUint8Array } from "antares-lib/utils";
     import { useStorage } from "$lib/storage.svelte";
-    import { writable } from "svelte/store";
     import { onMount } from "svelte";
     import { type ServerData } from "$lib/server.svelte";
     import { Client, type Channel } from "antares-lib";
@@ -18,7 +17,6 @@
 
     const servers = useStorage<ServerData[]>("servers", []);
     const currentServer = useStorage<ServerData | undefined>("currentServer", undefined);
-    const currentChannel = writable<Channel | undefined>();
 
     let client: Client | null = $state(null);
     let channelList: Channel[] = $state([]);
@@ -41,8 +39,6 @@
     async function onClientDisconnect() {}
 
     async function onCurrentServerChange(current: ServerData | undefined) {
-        currentChannel.set(undefined);
-
         const url = current?.url;
 
         client?.close();
@@ -93,9 +89,9 @@
     {:else if $currentServer && client}
         <div class="grid w-full h-full grid-cols-[auto_auto_1fr_auto]">
             <SidePanel {servers} {currentServer} onAddServer={() => (showAddServerModal = true)} />
-            <ChatsPanel {channelList} {currentChannel} {currentServer} {client} />
-            {#if $currentChannel}
-                {#key $currentChannel}
+            <ChatsPanel {channelList} {currentServer} {client} />
+            {#if client.currentChannel}
+                {#key client.currentChannel}
                     <Chat {client} />
                 {/key}
             {/if}

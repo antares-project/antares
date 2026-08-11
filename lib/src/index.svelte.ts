@@ -100,23 +100,23 @@ export class Client {
         return await this._rpc.call("listChannels");
     }
 
-    url() {
+    get url() {
         return this._url;
     }
 
-    isAuth() {
+    get isAuth() {
         return !!this._session;
     }
 
-    isAdmin() {
+    get isAdmin() {
         return this._session?.isAdmin ?? false;
     }
 
-    publicKey() {
+    get publicKey() {
         return this._session?.publicKey;
     }
 
-    currentChannel() {
+    get currentChannel() {
         return this._session?.currentChannel;
     }
 }

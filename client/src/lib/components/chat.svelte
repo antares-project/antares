@@ -35,7 +35,7 @@
             isSendingMessage = true;
 
             if (messageFiles) {
-                const files = await postFiles(client.url(), messageFiles);
+                const files = await postFiles(client.url, messageFiles);
                 const fileIds = files.map((f) => f.id);
 
                 await client.sendMessage(messageContent, fileIds);
@@ -103,7 +103,7 @@
         <div bind:this={scrollContainer} onscroll={onScroll} class="flex w-full h-full overflow-y-auto font-mono">
             <div class="flex flex-col gap-4">
                 {#each messages as msg}
-                    <Msg message={msg} url={client.url()} />
+                    <Msg message={msg} url={client.url} />
                 {/each}
             </div>
         </div>
