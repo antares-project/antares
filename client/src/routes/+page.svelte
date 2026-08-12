@@ -24,6 +24,8 @@
     let showAddServerModal = $state(false);
 
     async function onClientConnect(client: Client) {
+        info("onClientConnect");
+
         const challengeValue = await client.requestChallenge(auth?.publicKey!);
 
         const hash = sha256(stringToUint8Array(challengeValue.token));
@@ -36,7 +38,9 @@
         channelList = await client.listChannels();
     }
 
-    async function onClientDisconnect() {}
+    async function onClientDisconnect() {
+        info("OnSocketDisconnect");
+    }
 
     async function onCurrentServerChange(current: ServerData | undefined) {
         const url = current?.url;
@@ -48,12 +52,10 @@
         client = new Client(url);
 
         client.onOpen = async () => {
-            info("onClientConnect");
             onClientConnect(client!);
         };
 
         client.onClose = () => {
-            info("OnSocketDisconnect");
             onClientDisconnect();
         };
     }

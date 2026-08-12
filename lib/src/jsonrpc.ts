@@ -1,3 +1,5 @@
+import { WS } from "./websocke.js";
+
 type Version = "1.0" | "2.0";
 
 type Request = {
@@ -32,7 +34,7 @@ export class Client<
     ClientToServer extends Record<keyof ClientToServer, (...args: any[]) => any>,
     ServerToClient extends Record<keyof ServerToClient, (...args: any[]) => void>
 > {
-    private socket: WebSocket;
+    private socket: WS;
     private counter = 0;
 
     private pending = new Map<number, {
@@ -51,7 +53,7 @@ export class Client<
     public close: typeof WebSocket.prototype.close;
 
     constructor(url: string) {
-        this.socket = new WebSocket(url);
+        this.socket = new WS(url);
         this.close = this.socket.close.bind(this.socket);
 
         this.socket.onmessage = (event) => {
