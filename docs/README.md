@@ -1,15 +1,15 @@
-# antares
+# harmon
 
-![action](https://github.com/antares-project/antares/actions/workflows/server.yaml/badge.svg)
-![action](https://github.com/antares-project/antares/actions/workflows/client.yaml/badge.svg)
+![action](https://github.com/harmon-project/harmon/actions/workflows/server.yaml/badge.svg)
+![action](https://github.com/harmon-project/harmon/actions/workflows/client.yaml/badge.svg)
 
 ### production
 
-[web-app](https://alvorada.me)
+[web-app](https://harmon.chat)
 
-[download](https://github.com/antares-project/antares/releases)
+[download](https://github.com/harmon-project/harmon/releases)
 
-[docker](https://hub.docker.com/repository/docker/heraclitoqsaldanha/antares-server)
+[docker](https://hub.docker.com/repository/docker/heraclitoqsaldanha/harmon-server)
 
 ### documentation
 

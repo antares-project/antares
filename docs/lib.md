@@ -1,4 +1,4 @@
-# antares-lib
+# harmon-lib
 
 *all commands must be executed in the ./lib folder*
 

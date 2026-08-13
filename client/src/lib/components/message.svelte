@@ -1,6 +1,6 @@
 <script lang="ts">
     import { faDownload, faFile } from "@fortawesome/free-solid-svg-icons";
-    import type { Message } from "antares-lib";
+    import type { Message } from "harmon-lib";
     import Fa from "svelte-fa";
 
     const { url, message }: { url: string; message: Message } = $props();

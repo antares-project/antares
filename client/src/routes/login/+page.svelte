@@ -2,7 +2,7 @@
     import { goto } from "$app/navigation";
     import { login } from "$lib/auth";
     import InputWords from "$lib/components/inputWords.svelte";
-    import { keygen, mnemonicToSeed, generateMnemonic } from "antares-lib/crypto";
+    import { keygen, mnemonicToSeed, generateMnemonic } from "harmon-lib/crypto";
 
     const listSize = 12;
 

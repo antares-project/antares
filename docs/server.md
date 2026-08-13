@@ -1,4 +1,4 @@
-# antares-server
+# harmon-server
 
 *all commands must be executed in the ./server folder*
 

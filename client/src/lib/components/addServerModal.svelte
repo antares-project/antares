@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { getInfo, type GetInfoResponse } from "antares-lib/http";
-    import { DNSClient, ResolvePolicy, type HTTPSTypeRecordData } from "antares-lib/pkdns";
+    import { getInfo, type GetInfoResponse } from "harmon-lib/http";
+    import { DNSClient, ResolvePolicy, type HTTPSTypeRecordData } from "harmon-lib/pkdns";
     import { faX } from "@fortawesome/free-solid-svg-icons";
     import Loading from "./loading.svelte";
     import Fa from "svelte-fa";

@@ -65,28 +65,28 @@ jobs:
     - name: Upload Pages artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        name: antares-html
+        name: harmon-html
         path: client/build
         if-no-files-found: error
     
     - name: Upload AppImage artifact
       uses: actions/upload-artifact@v4
       with:
-        name: antares-appimage
+        name: harmon-appimage
         path: client/src-tauri/target/release/bundle/appimage/*.AppImage
         if-no-files-found: error
 
     - name: Upload Deb artifact
       uses: actions/upload-artifact@v4
       with:
-        name: antares-deb
+        name: harmon-deb
         path: client/src-tauri/target/release/bundle/deb/*.deb
         if-no-files-found: error
     
     - name: Upload Rpm artifact
       uses: actions/upload-artifact@v4
       with:
-        name: antares-rpm
+        name: harmon-rpm
         path: client/src-tauri/target/release/bundle/rpm/*.rpm
         if-no-files-found: error
 
@@ -111,4 +111,4 @@ jobs:
       id: deployment
       uses: actions/deploy-pages@v4
       with:
-        artifact_name: antares-html
+        artifact_name: harmon-html

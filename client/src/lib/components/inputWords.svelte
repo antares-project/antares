@@ -1,6 +1,6 @@
 <script lang="ts">
     import { clamp } from "$lib/utils";
-    import { englishWordlist as wordlist } from "antares-lib/crypto";
+    import { englishWordlist as wordlist } from "harmon-lib/crypto";
 
     const {
         onWordAdd,

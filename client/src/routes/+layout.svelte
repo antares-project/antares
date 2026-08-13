@@ -8,7 +8,7 @@
 </script>
 
 <svelte:head>
-	<title>Antares</title>
+	<title>Harmon</title>
 	<link rel="icon" href={icon} />
 </svelte:head>
 

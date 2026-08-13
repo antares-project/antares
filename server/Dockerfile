@@ -12,6 +12,6 @@ FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates
 
-COPY --from=build /source/target/x86_64-unknown-linux-musl/release/antares-server /bin/antares-server
+COPY --from=build /source/target/x86_64-unknown-linux-musl/release/harmon-server /bin/harmon-server
 
-CMD ["/bin/antares-server"]
+CMD ["/bin/harmon-server"]

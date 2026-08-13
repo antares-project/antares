@@ -1,5 +1,5 @@
 {
-	"name": "antares-client",
+	"name": "harmon-client",
 	"version": "0.1.0",
 	"description": "",
 	"type": "module",
@@ -17,7 +17,7 @@
 		"@tauri-apps/plugin-opener": "^2",
 		"@fortawesome/free-brands-svg-icons": "^7.2.0",
 		"@fortawesome/free-solid-svg-icons": "^7.2.0",
-		"antares-lib": "../lib",
+		"harmon-lib": "../lib",
 		"svelte-fa": "^4.0.4"
 	},
 	"devDependencies": {

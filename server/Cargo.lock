@@ -27,36 +27,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "antares-server"
-version = "0.1.0"
-dependencies = [
- "axum",
- "base32",
- "dotenvy",
- "ed25519-dalek 2.2.0",
- "hex",
- "jsonwebtoken",
- "log",
- "mime_guess",
- "pkarr",
- "rand 0.10.1",
- "serde",
- "serde_json",
- "serde_with",
- "sha2 0.11.0",
- "simple_logger",
- "sqlx",
- "time",
- "tokio",
- "tokio-util",
- "toml",
- "tower-http 0.7.0",
- "urlencoding",
- "uuid",
- "wspc",
-]
-
-[[package]]
 name = "anyhow"
 version = "1.0.102"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -961,6 +931,36 @@ dependencies = [
  "wasip2",
  "wasip3",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "harmon-server"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "base32",
+ "dotenvy",
+ "ed25519-dalek 2.2.0",
+ "hex",
+ "jsonwebtoken",
+ "log",
+ "mime_guess",
+ "pkarr",
+ "rand 0.10.1",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "sha2 0.11.0",
+ "simple_logger",
+ "sqlx",
+ "time",
+ "tokio",
+ "tokio-util",
+ "toml",
+ "tower-http 0.7.0",
+ "urlencoding",
+ "uuid",
+ "wspc",
 ]
 
 [[package]]

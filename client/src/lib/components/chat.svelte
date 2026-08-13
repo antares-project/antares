@@ -1,9 +1,9 @@
 <script lang="ts">
     import { onMount, tick } from "svelte";
-    import { Client, type Message } from "antares-lib";
+    import { Client, type Message } from "harmon-lib";
     import Fa from "svelte-fa";
     import { faUpload } from "@fortawesome/free-solid-svg-icons";
-    import { postFiles } from "antares-lib/http";
+    import { postFiles } from "harmon-lib/http";
     import FilePreview from "./filePreview.svelte";
     import Msg from "./message.svelte";
     import Loading from "./loading.svelte";

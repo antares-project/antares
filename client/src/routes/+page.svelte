@@ -2,12 +2,12 @@
     import { goto } from "$app/navigation";
     import { useAuth } from "$lib/auth";
     import { info } from "$lib/log";
-    import { sha256, sign } from "antares-lib/crypto";
-    import { stringToUint8Array } from "antares-lib/utils";
+    import { sha256, sign } from "harmon-lib/crypto";
+    import { stringToUint8Array } from "harmon-lib/utils";
     import { useStorage } from "$lib/storage.svelte";
     import { onMount } from "svelte";
     import { type ServerData } from "$lib/server.svelte";
-    import { Client, type Channel } from "antares-lib";
+    import { Client, type Channel } from "harmon-lib";
     import AddServerModal from "$lib/components/addServerModal.svelte";
     import Chat from "$lib/components/chat.svelte";
     import ChatsPanel from "$lib/components/chatsPanel.svelte";

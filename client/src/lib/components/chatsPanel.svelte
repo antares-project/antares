@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { ServerData } from "$lib/server.svelte";
-    import type { Channel, Client } from "antares-lib";
+    import type { Channel, Client } from "harmon-lib";
     import type { Writable } from "svelte/store";
     import { useAuth } from "$lib/auth";
     import { push } from "./toast.svelte";

@@ -1,12 +1,12 @@
 [package]
-name = "antares-client"
+name = "harmon-client"
 version = "0.1.0"
 description = "A Tauri App"
 authors = ["you"]
 edition = "2021"
 
 [lib]
-name = "antares_client_lib"
+name = "harmon_client_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

@@ -1,4 +1,4 @@
-# antares-client
+# harmon-client
 
 *all commands must be executed in the ./client folder*
 
