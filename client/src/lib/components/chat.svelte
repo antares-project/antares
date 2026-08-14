@@ -101,7 +101,7 @@
 <div class="flex h-screen w-full flex-col">
     <div class="flex w-full h-full overflow-y-auto">
         <div bind:this={scrollContainer} onscroll={onScroll} class="flex w-full h-full overflow-y-auto font-mono">
-            <div class="flex flex-col">
+            <div class="flex flex-col w-full">
                 {#each messages as msg}
                     <Msg message={msg} url={client.url} />
                 {/each}
