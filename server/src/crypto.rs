@@ -1,6 +1,7 @@
-use std::{fmt, ops};
-
 use crate::*;
+
+use std::fmt;
+use std::ops;
 
 use rand::TryRng;
 use rand::rngs::SysRng;
@@ -49,76 +50,168 @@ impl PublicKey {
 	pub fn as_bytes(&self) -> &[u8; 32] {
 		self.0.as_bytes()
 	}
+	#[inline(always)]
+	pub fn to_bytes(self) -> [u8; 32] {
+		self.0.to_bytes()
+	}
+	pub fn from_bytes(bytes: [u8; 32]) -> error::Result<Self> {
+		Ok(Self(ed25519_dalek::VerifyingKey::from_bytes(&bytes)?))
+	}
+	pub fn to_z32(&self) -> String {
+		base32::encode(base32::Alphabet::Z, &self.0.to_bytes())
+	}
+	pub fn from_z32(value: &str) -> error::Result<Self> {
+		let Some(bytes) = base32::decode(base32::Alphabet::Z, value) else {
+			return Err(error::Error::FailedDecodeBase32);
+		};
+		let Ok(array) = bytes.try_into() else {
+			return Err(error::Error::InvalidLength);
+		};
+		Ok(Self::from_bytes(array)?)
+	}
 }
 
 impl PrivateKey {
 	#[inline(always)]
-	pub fn from_bytes(bytes: [u8; 32]) -> Self {
-		Self(ed25519_dalek::SigningKey::from_bytes(&bytes))
-	}
-	#[inline(always)]
-	pub fn to_bytes(&self) -> [u8; 32] {
-		self.0.to_bytes()
+	pub fn generate() -> Self {
+		Self::from_bytes(rand32())
 	}
 	#[inline(always)]
 	pub fn public_key(&self) -> PublicKey {
 		PublicKey(self.0.verifying_key())
 	}
+	#[inline(always)]
+	pub fn as_bytes(&self) -> &[u8; 32] {
+		self.0.as_bytes()
+	}
+	#[inline(always)]
+	pub fn to_bytes(self) -> [u8; 32] {
+		self.0.to_bytes()
+	}
+	#[inline(always)]
+	pub fn from_bytes(bytes: [u8; 32]) -> Self {
+		Self(ed25519_dalek::SigningKey::from_bytes(&bytes))
+	}
+	pub fn to_z32(&self) -> String {
+		base32::encode(base32::Alphabet::Z, &self.0.to_bytes())
+	}
+	pub fn from_z32(value: &str) -> error::Result<Self> {
+		let Some(bytes) = base32::decode(base32::Alphabet::Z, value) else {
+			return Err(error::Error::FailedDecodeBase32);
+		};
+		let Ok(array) = bytes.try_into() else {
+			return Err(error::Error::InvalidLength);
+		};
+		Ok(Self(ed25519_dalek::SigningKey::from_bytes(&array)))
+	}
+}
+
+impl Signature {
+	#[inline(always)]
+	pub fn to_bytes(self) -> [u8; 64] {
+		self.0.to_bytes()
+	}
+	#[inline(always)]
+	pub fn from_bytes(bytes: [u8; 64]) -> Self {
+		Self(ed25519_dalek::Signature::from_bytes(&bytes))
+	}
+	pub fn to_z32(&self) -> String {
+		base32::encode(base32::Alphabet::Z, &self.0.to_bytes())
+	}
+	pub fn from_z32(value: &str) -> error::Result<Self> {
+		let Some(bytes) = base32::decode(base32::Alphabet::Z, value) else {
+			return Err(error::Error::FailedDecodeBase32);
+		};
+		let Ok(array) = bytes.try_into() else {
+			return Err(error::Error::InvalidLength);
+		};
+		Ok(Self::from_bytes(array))
+	}
+}
+
+impl Hash32 {
+	#[inline(always)]
+	pub fn as_bytes(&self) -> &[u8; 32] {
+		&self.0
+	}
+	#[inline(always)]
+	pub fn to_bytes(self) -> [u8; 32] {
+		self.0
+	}
+	#[inline(always)]
+	pub fn from_bytes(bytes: [u8; 32]) -> Self {
+		Self(bytes)
+	}
+	pub fn to_hex(&self) -> String {
+		hex::encode(self.to_bytes())
+	}
+	pub fn from_hex(value: &str) -> error::Result<Self> {
+		let bytes = hex::decode(value)?;
+		Ok(Self::from_bytes(bytes.as_slice().try_into().map_err(|_| error::Error::InvalidLength)?))
+	}
 }
 
 impl serde::Serialize for PublicKey {
 	fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-		hex::encode(self.0.as_bytes()).serialize(serializer)
+		self.to_z32().serialize(serializer)
 	}
 }
 
 impl<'de> serde::Deserialize<'de> for PublicKey {
 	fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-		let hex = String::deserialize(deserializer)?;
+		let value = String::deserialize(deserializer)?;
 
-		let bytes: [u8; 32] = hex::decode(&hex)
-			.map_err(serde::de::Error::custom)?
-			.try_into()
-			.map_err(|_| serde::de::Error::custom("invalid public key"))?;
-
-		Ok(Self(ed25519_dalek::VerifyingKey::from_bytes(&bytes).map_err(serde::de::Error::custom)?))
+		Ok(Self::from_z32(&value).map_err(|_| serde::de::Error::custom("invalid public key"))?)
 	}
 }
 
 impl serde::Serialize for Signature {
 	fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-		hex::encode(self.0.to_bytes()).serialize(serializer)
+		self.to_z32().serialize(serializer)
 	}
 }
 
 impl<'de> serde::Deserialize<'de> for Signature {
 	fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-		let hex = String::deserialize(deserializer)?;
+		let value = String::deserialize(deserializer)?;
 
-		let bytes = hex::decode(&hex)
-			.map_err(serde::de::Error::custom)?
-			.try_into()
-			.map_err(|_| serde::de::Error::custom("invalid signature"))?;
-
-		Ok(Self(ed25519_dalek::Signature::from_bytes(&bytes)))
+		Ok(Self::from_z32(&value).map_err(|_| serde::de::Error::custom("invalid signature"))?)
 	}
 }
 
 impl std::fmt::Debug for PublicKey {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		f.write_str(&base32::encode(base32::Alphabet::Z, &self.0.to_bytes()))
+		f.write_str(&self.to_z32())
 	}
 }
 
 impl std::fmt::Debug for PrivateKey {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		f.write_str(&base32::encode(base32::Alphabet::Z, &self.0.to_bytes()))
+		f.write_str(&self.to_z32())
 	}
 }
 
 impl std::fmt::Debug for Signature {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		f.write_str(&base32::encode(base32::Alphabet::Z, &self.0.to_bytes()))
+		f.write_str(&self.to_z32())
+	}
+}
+
+impl std::fmt::Display for PublicKey {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		f.write_str(&self.to_z32())
+	}
+}
+
+impl std::fmt::Display for PrivateKey {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		f.write_str(&self.to_z32())
+	}
+}
+
+impl std::fmt::Display for Signature {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		f.write_str(&self.to_z32())
 	}
 }
 
@@ -131,37 +224,62 @@ impl sqlx::Type<sqlx::Sqlite> for Hash32 {
 
 impl<'q> sqlx::Encode<'q, sqlx::Sqlite> for Hash32 {
 	fn encode_by_ref(&self, args: &mut Vec<sqlx::sqlite::SqliteArgumentValue<'q>>) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
-		let value: Vec<u8> = self.0.to_vec();
+		let value = self.0.to_vec();
+
 		<Vec<u8> as sqlx::Encode<sqlx::Sqlite>>::encode(value, args)
 	}
 }
 
 impl<'r> sqlx::Decode<'r, sqlx::Sqlite> for Hash32 {
 	fn decode(value: sqlx::sqlite::SqliteValueRef<'r>) -> Result<Self, sqlx::error::BoxDynError> {
-		let bytes: Vec<u8> = <Vec<u8> as sqlx::Decode<sqlx::Sqlite>>::decode(value)?;
-		let value: [u8; 32] = bytes.as_slice().try_into().map_err(|_| "invalid hash length (expected 32 bytes)")?;
-		Ok(Hash32(value))
+		let bytes = <Vec<u8> as sqlx::Decode<sqlx::Sqlite>>::decode(value)?;
+		let value = bytes.as_slice().try_into().map_err(|_| "invalid hash length (expected 32 bytes)")?;
+
+		Ok(Self::from_bytes(value))
+	}
+}
+
+impl sqlx::Type<sqlx::Sqlite> for PublicKey {
+	#[inline(always)]
+	fn type_info() -> sqlx::sqlite::SqliteTypeInfo {
+		<Vec<u8> as sqlx::Type<sqlx::Sqlite>>::type_info()
+	}
+}
+
+impl<'q> sqlx::Encode<'q, sqlx::Sqlite> for PublicKey {
+	fn encode_by_ref(&self, args: &mut Vec<sqlx::sqlite::SqliteArgumentValue<'q>>) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
+		let value = self.0.as_bytes().to_vec();
+
+		<Vec<u8> as sqlx::Encode<sqlx::Sqlite>>::encode(value, args)
+	}
+}
+
+impl<'r> sqlx::Decode<'r, sqlx::Sqlite> for PublicKey {
+	fn decode(value: sqlx::sqlite::SqliteValueRef<'r>) -> Result<Self, sqlx::error::BoxDynError> {
+		let bytes = <Vec<u8> as sqlx::Decode<sqlx::Sqlite>>::decode(value)?;
+		let value = bytes.as_slice().try_into().map_err(|_| "invalid hash length (expected 32 bytes)")?;
+
+		Ok(Self::from_bytes(value).map_err(|_| "Invalid public key bytes")?)
 	}
 }
 
 impl serde::Serialize for Hash32 {
 	fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-		hex::encode(self.0).serialize(serializer)
+		self.to_hex().serialize(serializer)
 	}
 }
 
 impl<'de> serde::Deserialize<'de> for Hash32 {
 	fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
 		let hex = String::deserialize(deserializer)?;
-		let bytes = hex::decode(&hex).map_err(serde::de::Error::custom)?.try_into().map_err(|_| serde::de::Error::custom("invalid hash"))?;
 
-		Ok(Self(bytes))
+		Ok(Self::from_hex(&hex).map_err(|_| serde::de::Error::custom("invalid hash"))?)
 	}
 }
 
 impl fmt::Debug for Hash32 {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		f.write_str(&hex::encode(self.0))
+		f.write_str(&self.to_hex())
 	}
 }
 

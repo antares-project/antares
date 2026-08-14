@@ -111,7 +111,7 @@ pub async fn confirm_challenge(app: wspc::App, params: wspc::Params<ConfirmAuthC
 	let now = time::SystemTime::now().duration_since(time::UNIX_EPOCH)?;
 	let exp = now.as_secs() + state.env.jwt_expiration_seconds;
 
-	let is_admin = state.config.admin_public_keys.contains(public_key.as_bytes());
+	let is_admin = state.config.admin_public_keys.contains(&public_key);
 	let payload = AuthenticatedPayload { public_key, is_admin, exp };
 	let token = crypto::encode_jwt(state.env.jwt_secret.as_bytes(), &payload)?;
 

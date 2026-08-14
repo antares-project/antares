@@ -14,4 +14,4 @@ RUN apk --no-cache add ca-certificates
 
 COPY --from=build /source/target/x86_64-unknown-linux-musl/release/harmon-server /bin/harmon-server
 
-CMD ["/bin/harmon-server"]
+CMD ["/bin/harmon-server", "run"]

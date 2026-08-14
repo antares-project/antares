@@ -32,8 +32,3 @@ migrations are applied automatically when the project is run, however, if you wa
 sqlx migrate run
 cargo sqlx prepare
 ```
-
-### generate Ed25519 key
-```sh
-openssl genpkey -algorithm Ed25519 -outform DER | tail -c 32 | xxd -p -c 32
-```

@@ -5,7 +5,8 @@
     import { useAuth } from "$lib/auth";
     import { push } from "./toast.svelte";
     import Fa from "svelte-fa";
-    import { faHashtag, faMicrophone, faVolume } from "@fortawesome/free-solid-svg-icons";
+    import { faHashtag, faVolume } from "@fortawesome/free-solid-svg-icons";
+    import { uint8ArrayToZ32 } from "harmon-lib/utils";
 
     const {
         client,
@@ -18,7 +19,7 @@
     } = $props();
 
     const auth = useAuth();
-    const pubKey = auth?.publicKey.toHex() ?? "";
+    const pubKey = uint8ArrayToZ32(auth?.publicKey!);
 
     async function selectChannel(channel: Channel) {
         await client.joinChannel(channel.id);

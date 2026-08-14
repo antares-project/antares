@@ -21,6 +21,9 @@ pub enum Error {
 	PkarrBuildError(pkarr::errors::BuildError),
 	PkarrSignedPacketBuildError(pkarr::errors::SignedPacketBuildError),
 	PkarrSimpleDnsError(pkarr::dns::SimpleDnsError),
+	SignatureError(ed25519_dalek::SignatureError),
+	FailedDecodeBase32,
+	InvalidLength,
 	Unauthorized,
 	ChannelDoesNotExist,
 	NotInChannel,
@@ -143,6 +146,13 @@ impl From<pkarr::dns::SimpleDnsError> for Error {
 	#[inline(always)]
 	fn from(value: pkarr::dns::SimpleDnsError) -> Self {
 		Self::PkarrSimpleDnsError(value)
+	}
+}
+
+impl From<ed25519_dalek::SignatureError> for Error {
+	#[inline(always)]
+	fn from(value: ed25519_dalek::SignatureError) -> Self {
+		Self::SignatureError(value)
 	}
 }
 

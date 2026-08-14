@@ -1,4 +1,5 @@
 
+import { uint8ArrayToZ32, z32toUint8Array } from "./utils.js";
 import { Client as JsonRPCClient } from "./jsonrpc.js";
 import { getInfo } from "./http.js";
 
@@ -50,17 +51,17 @@ export class Client {
     }
 
     async requestChallenge(publicKey: Uint8Array) {
-        return await this._rpc.call("requestChallenge", publicKey.toHex());
+        return await this._rpc.call("requestChallenge", uint8ArrayToZ32(publicKey));
     }
 
     async confirmChallenge(token: string, signature: Uint8Array) {
-        return await this._rpc.call("confirmChallenge", token, signature.toHex());
+        return await this._rpc.call("confirmChallenge", token, uint8ArrayToZ32(signature));
     }
 
     async auth(token: string) {
         const payload = await this._rpc.call("auth", token);
         this._session = {
-            publicKey: Uint8Array.fromHex(payload.public_key),
+            publicKey: z32toUint8Array(payload.public_key),
             isAdmin: payload.is_admin,
             authToken: token,
         };

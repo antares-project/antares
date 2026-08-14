@@ -31,7 +31,7 @@ impl Env {
 		let jwt_challenge_secret = env::var("JWT_CHALLENGE_SECRET")?;
 		let jwt_challenge_expiration_seconds = env::var("JWT_CHALLENGE_EXPIRATION_SECONDS")?.parse()?;
 
-		let private_key = crypto::PrivateKey::from_bytes(hex::FromHex::from_hex(env::var("PRIVATE_KEY")?)?);
+		let private_key = crypto::PrivateKey::from_z32(&env::var("PRIVATE_KEY")?)?;
 		let public_key = private_key.public_key();
 
 		Ok(Self {

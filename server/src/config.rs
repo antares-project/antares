@@ -6,13 +6,11 @@ use std::path;
 
 const DEFAULT_CONFIG: &str = include_str!("../config.toml");
 
-#[serde_with::serde_as]
 #[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
 pub struct Config {
 	pub title: String,
 	pub icon_path: path::PathBuf,
-	#[serde_as(as = "Vec<serde_with::hex::Hex>")]
-	pub admin_public_keys: Vec<[u8; 32]>,
+	pub admin_public_keys: Vec<crypto::PublicKey>,
 	pub file_path: path::PathBuf,
 
 	pub public_https_address: String,
