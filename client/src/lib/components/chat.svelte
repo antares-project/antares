@@ -99,9 +99,9 @@
 </script>
 
 <div class="flex h-screen w-full flex-col">
-    <div class="flex w-full h-full p-4 overflow-y-auto">
+    <div class="flex w-full h-full overflow-y-auto">
         <div bind:this={scrollContainer} onscroll={onScroll} class="flex w-full h-full overflow-y-auto font-mono">
-            <div class="flex flex-col gap-4">
+            <div class="flex flex-col">
                 {#each messages as msg}
                     <Msg message={msg} url={client.url} />
                 {/each}
