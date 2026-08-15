@@ -5,6 +5,7 @@ pub mod db;
 pub mod env;
 pub mod error;
 pub mod jobs;
+pub mod pkdns;
 pub mod routes;
 
 use clap::Parser;

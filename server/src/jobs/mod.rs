@@ -50,16 +50,14 @@ async fn dns_publisher_job(app: app::AppState) -> error::Result<()> {
 
 	let ttl = 3600;
 
-	let keypair = pkarr::Keypair::from_secret_key(&app.env.private_key.to_bytes());
+	let name: pkdns::Name<'_> = ".".try_into()?;
+	let svcb = pkdns::rdata::SVCB::new(0, https.as_str().try_into()?);
 
-	let name: pkarr::dns::Name<'_> = ".".try_into()?;
-	let svcb = pkarr::dns::rdata::SVCB::new(0, https.as_str().try_into()?);
-
-	let packet = pkarr::SignedPacket::builder()
+	let packet = pkdns::SignedPacket::builder()
 		.a(name.clone(), ipv4, ttl)
 		.aaaa(name.clone(), ipv6, ttl)
 		.https(name.clone(), svcb, ttl)
-		.sign(&keypair)?;
+		.sign(&app.env.private_key)?;
 
 	create_interval!(3_600_000, {
 		app.pkdns.publish(&packet, None).await?;
