@@ -5,6 +5,7 @@ pub type BuildError = pkarr::errors::BuildError;
 pub type PublicKeyError = pkarr::errors::PublicKeyError;
 pub type PublishError = pkarr::errors::PublishError;
 pub type SignedPacketBuildError = pkarr::errors::SignedPacketBuildError;
+pub type ResourceRecord<'a> = pkarr::dns::ResourceRecord<'a>;
 pub type Name<'a> = pkarr::dns::Name<'a>;
 pub type TXT<'a> = pkarr::dns::rdata::TXT<'a>;
 pub type Ipv4Addr = std::net::Ipv4Addr;
@@ -30,6 +31,19 @@ impl SignedPacket {
 	pub fn builder() -> SignedPacketBuilder {
 		SignedPacketBuilder::default()
 	}
+	pub fn public_key(&self) -> crypto::PublicKey {
+		let bytes = self.inner.public_key().to_bytes();
+		crypto::PublicKey::from_bytes(bytes).unwrap()
+	}
+	pub fn all_resource_records(&self) -> impl Iterator<Item = &ResourceRecord<'_>> {
+		self.inner.all_resource_records()
+	}
+	pub fn resource_records(&self, name: &str) -> impl Iterator<Item = &ResourceRecord<'_>> {
+		self.inner.resource_records(name)
+	}
+	pub fn timestamp(&self) -> Timestamp {
+		self.inner.timestamp()
+	}
 }
 
 impl SignedPacketBuilder {
@@ -49,7 +63,7 @@ impl SignedPacketBuilder {
 		self.inner = self.inner.txt(name, text, ttl);
 		self
 	}
-	pub fn sign(self, private_key: &crypto::PrivateKey) -> error::Result<SignedPacket, SignedPacketBuildError> {
+	pub fn sign(self, private_key: &crypto::PrivateKey) -> error::Result<SignedPacket> {
 		let keypair = pkarr::Keypair::from_secret_key(private_key.as_bytes());
 		let inner = self.inner.sign(&keypair)?;
 
@@ -58,20 +72,18 @@ impl SignedPacketBuilder {
 }
 
 impl Client {
-	pub fn new() -> Result<Self, BuildError> {
+	pub fn new() -> error::Result<Self> {
 		let inner = pkarr::ClientBuilder::default().build()?;
 
 		Ok(Self { inner })
 	}
-
-	pub async fn resolve(&self, public_key: crypto::PublicKey) -> Result<Option<SignedPacket>, PublicKeyError> {
+	pub async fn resolve(&self, public_key: crypto::PublicKey) -> error::Result<Option<SignedPacket>> {
 		let public_key = pkarr::PublicKey::try_from(&public_key.to_bytes() as &[u8])?;
 		let inner = self.inner.resolve(&public_key).await;
 
 		Ok(inner.map(|inner| SignedPacket { inner }))
 	}
-
-	pub async fn publish(&self, signed_packet: &SignedPacket, cas: Option<Timestamp>) -> Result<(), PublishError> {
+	pub async fn publish(&self, signed_packet: &SignedPacket, cas: Option<Timestamp>) -> error::Result<()> {
 		Ok(self.inner.publish(&signed_packet.inner, cas).await?)
 	}
 }
