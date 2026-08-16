@@ -4,11 +4,13 @@ mod attachments;
 mod channels;
 mod files;
 mod messages;
+mod profiles;
 
 pub use attachments::*;
 pub use channels::*;
 pub use files::*;
 pub use messages::*;
+pub use profiles::*;
 
 use sqlx::migrate::MigrateDatabase;
 

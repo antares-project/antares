@@ -1,0 +1,44 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            INSERT INTO profiles\n                (id, public_key, name, updated_at, created_at)\n            VALUES\n                (?, ?, ?, ?, ?)\n\t\t\tON CONFLICT(public_key) DO UPDATE SET\n\t\t\t\tname = excluded.name,\n\t\t\t\tupdated_at = excluded.updated_at\n            RETURNING\n                id as \"id!: Uuid\",\n                public_key as \"public_key!: crypto::PublicKey\",\n                name as \"name!: String\",\n\t\t\t\tupdated_at as \"updated_at!: time::OffsetDateTime\",\n\t\t\t\tcreated_at as \"created_at!: time::OffsetDateTime\"\n            ;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: Uuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "public_key!: crypto::PublicKey",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "name!: String",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "updated_at!: time::OffsetDateTime",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "created_at!: time::OffsetDateTime",
+        "ordinal": 4,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "ddba3636652eabbaaea65f4eb3d9bb5dcafb49c4697369a04c33b501e37081d3"
+}
