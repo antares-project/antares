@@ -27,6 +27,21 @@ pub struct SignedPacketBuilder {
 	inner: pkarr::SignedPacketBuilder,
 }
 
+pub struct DnsServer {
+	pub a: Ipv4Addr,
+	pub aaaa: Ipv6Addr,
+	pub https: String,
+}
+
+impl DnsServer {
+	pub fn to_signed_packet_builder(&self, ttl: u32) -> error::Result<SignedPacketBuilder> {
+		let name: pkdns::Name<'_> = ".".try_into()?;
+		let svcb = pkdns::rdata::SVCB::new(0, self.https.as_str().try_into()?);
+
+		Ok(SignedPacket::builder().a(name.clone(), self.a, ttl).aaaa(name.clone(), self.aaaa, ttl).https(name.clone(), svcb, ttl))
+	}
+}
+
 impl SignedPacket {
 	pub fn builder() -> SignedPacketBuilder {
 		SignedPacketBuilder::default()
@@ -86,30 +101,61 @@ impl Client {
 	pub async fn publish(&self, signed_packet: &SignedPacket, cas: Option<Timestamp>) -> error::Result<()> {
 		Ok(self.inner.publish(&signed_packet.inner, cas).await?)
 	}
-}
-
-pub async fn resolve_profile_servers(client: &Client, public_key: crypto::PublicKey) -> error::Result<Option<Vec<crypto::PublicKey>>> {
-	let Some(signed_packet) = client.resolve(public_key).await? else {
-		return Ok(None);
-	};
-	let mut servers = Vec::new();
-
-	for record in signed_packet.resource_records("harmon") {
-		let pkarr::dns::rdata::RData::TXT(txt) = &record.rdata else {
-			log::warn!("Unexpected record type: {:?}", record);
-			continue;
-		};
-		let Ok(server) = String::try_from(txt.clone()) else {
-			log::warn!("Failed to parse TXT record as string: {:?}", txt);
-			continue;
-		};
-		let Ok(public_key) = crypto::PublicKey::from_z32(&server) else {
-			log::warn!("Failed to parse public key from server: {:?}", server);
-			continue;
+	pub async fn resolve_profile_server(&self, public_key: crypto::PublicKey) -> error::Result<Option<crypto::PublicKey>> {
+		let Some(signed_packet) = self.resolve(public_key).await? else {
+			return Ok(None);
 		};
 
-		servers.push(public_key);
+		for record in signed_packet.resource_records("harmon") {
+			let pkarr::dns::rdata::RData::TXT(txt) = &record.rdata else {
+				log::warn!("Unexpected record type: {:?}", record);
+				continue;
+			};
+			let Ok(public_key) = String::try_from(txt.clone()) else {
+				log::warn!("Failed to parse TXT record as string: {:?}", txt);
+				continue;
+			};
+			let Ok(public_key) = crypto::PublicKey::from_z32(&public_key) else {
+				log::warn!("Failed to parse public key from server: {:?}", public_key);
+				continue;
+			};
+
+			return Ok(Some(public_key));
+		}
+
+		Ok(None)
 	}
+	pub async fn resolve_server(&self, public_key: crypto::PublicKey) -> error::Result<Option<DnsServer>> {
+		let Some(signed_packet) = self.resolve(public_key).await? else {
+			return Ok(None);
+		};
 
-	Ok(Some(servers))
+		let mut a = None;
+		let mut aaaa = None;
+		let mut https = None;
+
+		for record in signed_packet.all_resource_records() {
+			match &record.rdata {
+				rdata::RData::A(entry) => a = Some(entry.address.into()),
+				rdata::RData::AAAA(entry) => aaaa = Some(entry.address.into()),
+				rdata::RData::HTTPS(entry) => https = Some(entry.target.to_string()),
+				_ => continue,
+			}
+		}
+
+		let Some(a) = a else {
+			log::warn!("No A record found in signed packet");
+			return Ok(None);
+		};
+		let Some(aaaa) = aaaa else {
+			log::warn!("No AAAA record found in signed packet");
+			return Ok(None);
+		};
+		let Some(https) = https else {
+			log::warn!("No HTTPS record found in signed packet");
+			return Ok(None);
+		};
+
+		Ok(Some(DnsServer { a, aaaa, https }))
+	}
 }
