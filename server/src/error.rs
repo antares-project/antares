@@ -28,7 +28,7 @@ pub enum Error {
 	Unauthorized,
 	ChannelDoesNotExist,
 	NotInChannel,
-	IconNotFound,
+	NotFound,
 }
 
 impl From<sqlx::error::Error> for Error {
@@ -168,7 +168,7 @@ impl axum::response::IntoResponse for Error {
 	fn into_response(self) -> axum::response::Response {
 		match self {
 			Self::Unauthorized => (axum::http::StatusCode::UNAUTHORIZED, "Unauthorized"),
-			Self::IconNotFound => (axum::http::StatusCode::NOT_FOUND, "Icon Not Found"),
+			Self::NotFound => (axum::http::StatusCode::NOT_FOUND, "Not Found"),
 			_ => (axum::http::StatusCode::INTERNAL_SERVER_ERROR, "Internal error"),
 		}
 		.into_response()

@@ -2,6 +2,7 @@ mod auth;
 mod channel;
 mod life_cycle;
 mod message;
+mod profile;
 
 use crate::*;
 
@@ -26,6 +27,9 @@ pub fn router(state: &app::AppState) -> MethodRouter<app::AppState> {
 	app.on("createChannel", channel::create_channel);
 	app.on("deleteChannel", channel::delete_channel);
 	app.on("listChannels", channel::list_channels);
+
+	app.on("getProfile", profile::get_profile);
+	app.on("updateProfile", profile::update_profile);
 
 	route
 }

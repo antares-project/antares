@@ -4,7 +4,6 @@ use std::time;
 
 #[derive(Debug, Clone)]
 pub struct AuthenticatedData {
-	#[allow(dead_code)]
 	pub public_key: crypto::PublicKey,
 	pub is_admin: bool,
 }
