@@ -1,6 +1,6 @@
 <script lang="ts">
     import { getInfo, type GetInfoResponse } from "harmon-lib/http";
-    import { DNSClient, ResolvePolicy, type HTTPSTypeRecordData } from "harmon-lib/pkdns";
+    import { DNSClient } from "harmon-lib/pkdns";
     import { faX } from "@fortawesome/free-solid-svg-icons";
     import Loading from "./loading.svelte";
     import Fa from "svelte-fa";
@@ -14,13 +14,11 @@
     async function updateInfo(publicKey: string) {
         try {
             const dnsClient = new DNSClient();
-            const entries = await dnsClient.resolve(publicKey, ResolvePolicy.NetworkOnly);
-            const entry = entries?.find((entry) => entry.rdata.type == "HTTPS");
-            const record = entry?.rdata as HTTPSTypeRecordData | undefined;
+            const records = await dnsClient.resolveServer(publicKey);
 
-            if (!record) return;
+            if (!records) return;
 
-            url = `https://${record.target}`;
+            url = `https://${records.https.target}`;
             serverInfo = await getInfo(url);
         } catch {
             serverInfo = undefined;
