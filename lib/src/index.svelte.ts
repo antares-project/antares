@@ -101,6 +101,20 @@ export class Client {
         return await this._rpc.call("listChannels");
     }
 
+    async getProfile(public_key?: string) {
+        if (!this.isAuth && !public_key) {
+            throw new Error("Not authenticated and no public key provided");
+        }
+        return await this._rpc.call("getProfile", public_key);
+    }
+
+    async updateProfile(name: string) {
+        if (!this.isAuth) {
+            throw new Error("Not authenticated");
+        }
+        return await this._rpc.call("updateProfile", name);
+    }
+
     get url() {
         return this._url;
     }
@@ -164,6 +178,11 @@ export interface Channel {
     name: string,
 }
 
+export interface Profile {
+    name: string,
+    public_key: string
+}
+
 interface ServerToClientEvents {
     messageReceived(message: Message): void,
     channelDeleted(channel: Channel): void
@@ -180,5 +199,8 @@ interface ClientToServerEvents {
 
     createChannel(name: string): Channel,
     deleteChannel(channelId: string): Channel,
-    listChannels(): Channel[]
+    listChannels(): Channel[],
+
+    updateProfile(name: string): Profile,
+    getProfile(public_key?: string): Profile | undefined
 }
