@@ -87,3 +87,29 @@ impl Client {
 		Ok(self.inner.publish(&signed_packet.inner, cas).await?)
 	}
 }
+
+pub async fn resolve_profile_servers(client: &Client, public_key: crypto::PublicKey) -> error::Result<Option<Vec<crypto::PublicKey>>> {
+	let Some(signed_packet) = client.resolve(public_key).await? else {
+		return Ok(None);
+	};
+	let mut servers = Vec::new();
+
+	for record in signed_packet.resource_records("harmon") {
+		let pkarr::dns::rdata::RData::TXT(txt) = &record.rdata else {
+			log::warn!("Unexpected record type: {:?}", record);
+			continue;
+		};
+		let Ok(server) = String::try_from(txt.clone()) else {
+			log::warn!("Failed to parse TXT record as string: {:?}", txt);
+			continue;
+		};
+		let Ok(public_key) = crypto::PublicKey::from_z32(&server) else {
+			log::warn!("Failed to parse public key from server: {:?}", server);
+			continue;
+		};
+
+		servers.push(public_key);
+	}
+
+	Ok(Some(servers))
+}
