@@ -20,7 +20,7 @@ pub struct GetProfileParams {
 pub async fn update_profile(params: wspc::Params<UpdateProfileParams>, app: wspc::App, socket: wspc::Socket) -> error::Result<Profile> {
 	let state = app.get_state::<app::AppState>().unwrap();
 
-	let Some(authenticated) = socket.get_state::<auth::AuthenticatedData>() else {
+	let Some(authenticated) = socket.get_state::<auth::AuthenticatedPayload>() else {
 		return Err(error::Error::Unauthorized);
 	};
 
@@ -34,7 +34,7 @@ pub async fn get_profile(params: wspc::Params<GetProfileParams>, app: wspc::App,
 
 	let public_key = match params.public_key {
 		Some(public_key) => public_key,
-		None => match socket.get_state::<auth::AuthenticatedData>() {
+		None => match socket.get_state::<auth::AuthenticatedPayload>() {
 			Some(authenticated) => authenticated.public_key,
 			None => return Err(error::Error::Unauthorized),
 		},

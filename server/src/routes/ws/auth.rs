@@ -2,12 +2,6 @@ use crate::*;
 
 use std::time;
 
-#[derive(Debug, Clone)]
-pub struct AuthenticatedData {
-	pub public_key: crypto::PublicKey,
-	pub is_admin: bool,
-}
-
 #[derive(Debug, serde::Deserialize)]
 pub struct AuthParams {
 	pub token: String,
@@ -51,7 +45,7 @@ pub struct ResponseAuthChallenge {
 
 #[inline]
 pub fn is_admin(socket: &wspc::Socket) -> bool {
-	if let Some(AuthenticatedData { is_admin, .. }) = socket.get_state::<AuthenticatedData>() {
+	if let Some(AuthenticatedPayload { is_admin, .. }) = socket.get_state::<AuthenticatedPayload>() {
 		is_admin
 	} else {
 		false
@@ -60,7 +54,7 @@ pub fn is_admin(socket: &wspc::Socket) -> bool {
 
 #[inline]
 pub fn is_auth(socket: &wspc::Socket) -> bool {
-	socket.get_state::<AuthenticatedData>().is_some()
+	socket.get_state::<AuthenticatedPayload>().is_some()
 }
 
 pub async fn auth(app: wspc::App, socket: wspc::Socket, params: wspc::Params<AuthParams>) -> error::Result<AuthenticatedPayload> {
@@ -69,10 +63,7 @@ pub async fn auth(app: wspc::App, socket: wspc::Socket, params: wspc::Params<Aut
 	let jwt_secret = state.env.jwt_secret.as_bytes();
 	let data = crypto::decode_jwt::<AuthenticatedPayload>(jwt_secret, &params.token)?;
 
-	let public_key = data.public_key;
-	let is_admin = data.is_admin;
-
-	socket.set_state(AuthenticatedData { public_key, is_admin });
+	socket.set_state(data.clone());
 
 	Ok(data)
 }
