@@ -23,7 +23,7 @@
 <div class="flex items-center justify-center w-screen h-screen fixed z-10 backdrop-blur-xs">
     <form class="relative flex flex-col items-center justify-center gap-4 bg-gray-900 p-4 border border-gray-800 rounded-md" onsubmit={submit}>
         {#if closable ?? false}
-            <button type="button" class="absolute top-4 right-4 text-white" onclick={onClose}>
+            <button type="button" class="absolute top-4 right-4 text-white cursor-pointer" onclick={onClose}>
                 <Fa icon={faClose}></Fa>
             </button>
         {/if}
