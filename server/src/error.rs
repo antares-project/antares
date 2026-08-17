@@ -23,6 +23,7 @@ pub enum Error {
 	PkarrPublicKeyError(pkarr::errors::PublicKeyError),
 	PkarrSimpleDnsError(pkarr::dns::SimpleDnsError),
 	SignatureError(ed25519_dalek::SignatureError),
+	Reqwest(reqwest::Error),
 	FailedDecodeBase32,
 	InvalidLength,
 	Unauthorized,
@@ -161,6 +162,13 @@ impl From<ed25519_dalek::SignatureError> for Error {
 	#[inline(always)]
 	fn from(value: ed25519_dalek::SignatureError) -> Self {
 		Self::SignatureError(value)
+	}
+}
+
+impl From<reqwest::Error> for Error {
+	#[inline(always)]
+	fn from(value: reqwest::Error) -> Self {
+		Self::Reqwest(value)
 	}
 }
 
