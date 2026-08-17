@@ -22,18 +22,17 @@ export interface TXTRecordData {
     value: string,
 }
 
-export type RecordData = ARecordData | AAAARecordData | HTTPSRecordData | TXTRecordData;
+export interface CNAMERecordData {
+    type: "CNAME",
+    target: string,
+}
+
+export type RecordData = ARecordData | AAAARecordData | HTTPSRecordData | TXTRecordData | CNAMERecordData;
 
 export interface DnsEntry {
     name: string,
     ttl: number,
     rdata: RecordData,
-}
-
-export interface DnsServer {
-    a: ARecordData,
-    aaaa: AAAARecordData,
-    https: HTTPSRecordData,
 }
 
 export class DNSClient {
@@ -52,36 +51,33 @@ export class DNSClient {
         return (value?.records ?? []) as DnsEntry[];
     }
 
-    async resolveProfileServer(public_key_str: string, policy: ResolvePolicy = ResolvePolicy.NetworkOnly): Promise<string | null> {
-        const entry = await this.resolve(public_key_str, policy);
+    async resolveUrl(url: string) {
+        const haveProtocol = url.startsWith("https://") || url.startsWith("http://") || url.startsWith("wss://") || url.startsWith("ws://");
+        const urlObject = new URL(haveProtocol ? url : `https://${url}`);
 
-        if (!entry) return null;
+        const resolve = async (publicKey: string) => {
+            const entries = await this.resolve(publicKey);
 
-        for (const record of entry) {
-            if (record.name === "harmon" && record.rdata.type === "TXT") {
-                return record.rdata.value;
+            for (const entry of entries ?? []) {
+                switch (entry.rdata.type) {
+                    case "HTTPS": {
+                        return entry.rdata.target;
+                    }
+                    case "CNAME": {
+                        return await resolve(entry.rdata.target);
+                    }
+                }
             }
+
+            return null;
         }
 
-        return null;
-    }
+        const host = await resolve(urlObject.host);
 
-    async resolveServer(public_key_str: string, policy: ResolvePolicy = ResolvePolicy.NetworkOnly): Promise<DnsServer | null> {
-        const entry = await this.resolve(public_key_str, policy);
-        if (!entry) return null;
+        if (!host) return null;
 
-        let a: ARecordData | undefined;
-        let aaaa: AAAARecordData | undefined;
-        let https: HTTPSRecordData | undefined;
+        urlObject.host = host;
 
-        for (const record of entry) {
-            if (record.rdata.type === "A" && record.name === public_key_str) a = record.rdata;
-            if (record.rdata.type === "AAAA" && record.name === public_key_str) aaaa = record.rdata;
-            if (record.rdata.type === "HTTPS" && record.name === public_key_str) https = record.rdata;
-        }
-
-        if (!a || !aaaa || !https) return null;
-
-        return { a, aaaa, https };
+        return urlObject.href.endsWith("/") ? urlObject.href.slice(0, -1) : urlObject.href;
     }
 }

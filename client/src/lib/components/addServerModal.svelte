@@ -1,9 +1,9 @@
 <script lang="ts">
     import { getInfo, type GetInfoResponse } from "harmon-lib/http";
-    import { DNSClient } from "harmon-lib/pkdns";
     import { faX } from "@fortawesome/free-solid-svg-icons";
     import Loading from "./loading.svelte";
     import Fa from "svelte-fa";
+    import { DNSClient } from "harmon-lib/pkdns";
 
     let url = $state("");
     let publicKey = $state("");
@@ -14,11 +14,11 @@
     async function updateInfo(publicKey: string) {
         try {
             const dnsClient = new DNSClient();
-            const records = await dnsClient.resolveServer(publicKey);
+            const urlEntry = await dnsClient.resolveUrl(`https://${publicKey}`);
 
-            if (!records) return;
+            if (!urlEntry) return;
 
-            url = `https://${records.https.target}`;
+            url = urlEntry;
             serverInfo = await getInfo(url);
         } catch {
             serverInfo = undefined;
