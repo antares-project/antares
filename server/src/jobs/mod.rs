@@ -60,6 +60,6 @@ async fn dns_publisher_job(app: app::AppState) -> error::Result<()> {
 		.sign(&app.env.private_key)?;
 
 	create_interval!(3_600_000, {
-		app.pkdns.publish(&packet, None).await?;
+		app.pkdns.publish(&packet).await?;
 	});
 }

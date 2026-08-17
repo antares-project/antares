@@ -21,6 +21,7 @@ pub enum Error {
 	PkarrBuildError(pkarr::errors::BuildError),
 	PkarrSignedPacketBuildError(pkarr::errors::SignedPacketBuildError),
 	PkarrPublicKeyError(pkarr::errors::PublicKeyError),
+	PkarrResolveError(pkarr::errors::ResolveError),
 	PkarrSimpleDnsError(pkarr::dns::SimpleDnsError),
 	SignatureError(ed25519_dalek::SignatureError),
 	Reqwest(reqwest::Error),
@@ -148,6 +149,13 @@ impl From<pkarr::errors::PublicKeyError> for Error {
 	#[inline(always)]
 	fn from(value: pkarr::errors::PublicKeyError) -> Self {
 		Self::PkarrPublicKeyError(value)
+	}
+}
+
+impl From<pkarr::errors::ResolveError> for Error {
+	#[inline(always)]
+	fn from(value: pkarr::errors::ResolveError) -> Self {
+		Self::PkarrResolveError(value)
 	}
 }
 

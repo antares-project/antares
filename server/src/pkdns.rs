@@ -6,6 +6,8 @@ pub type PublicKeyError = pkarr::errors::PublicKeyError;
 pub type PublishError = pkarr::errors::PublishError;
 pub type SignedPacketBuildError = pkarr::errors::SignedPacketBuildError;
 pub type ResourceRecord<'a> = pkarr::dns::ResourceRecord<'a>;
+pub type ResolvePolicy = pkarr::ResolvePolicy;
+pub type StoredNodeCount = pkarr::StoredNodeCount;
 pub type Name<'a> = pkarr::dns::Name<'a>;
 pub type TXT<'a> = pkarr::dns::rdata::TXT<'a>;
 pub type Ipv4Addr = std::net::Ipv4Addr;
@@ -77,14 +79,14 @@ impl Client {
 
 		Ok(Self { inner })
 	}
-	pub async fn resolve(&self, public_key: crypto::PublicKey) -> error::Result<Option<SignedPacket>> {
+	pub async fn resolve(&self, public_key: crypto::PublicKey, policy: ResolvePolicy) -> error::Result<SignedPacket> {
 		let public_key = pkarr::PublicKey::try_from(&public_key.to_bytes() as &[u8])?;
-		let inner = self.inner.resolve(&public_key).await;
+		let inner = self.inner.resolve(&public_key, policy).await?;
 
-		Ok(inner.map(|inner| SignedPacket { inner }))
+		Ok(SignedPacket { inner })
 	}
-	pub async fn publish(&self, signed_packet: &SignedPacket, cas: Option<Timestamp>) -> error::Result<()> {
-		Ok(self.inner.publish(&signed_packet.inner, cas).await?)
+	pub async fn publish(&self, signed_packet: &SignedPacket) -> error::Result<StoredNodeCount> {
+		Ok(self.inner.publish(&signed_packet.inner).await?)
 	}
 	pub fn request_client(&self) -> error::Result<reqwest::Client> {
 		Ok(reqwest::ClientBuilder::from(self.inner.clone()).build()?)
