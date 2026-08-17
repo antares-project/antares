@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { ServerData } from "$lib/server.svelte";
-    import type { Channel, Client } from "harmon-lib";
+    import type { Channel, Client, Profile } from "harmon-lib";
     import type { Writable } from "svelte/store";
     import { useAuth } from "$lib/auth";
     import { push } from "./toast.svelte";
@@ -12,10 +12,14 @@
         client,
         channelList,
         currentServer,
+        profile,
+        onClickProfile,
     }: {
         client: Client;
         channelList: Channel[];
         currentServer: Writable<ServerData | undefined>;
+        profile: Profile;
+        onClickProfile: () => void;
     } = $props();
 
     const auth = useAuth();
@@ -48,12 +52,17 @@
     </div>
     <hr />
     <div class="flex flex-col p-4 h-20 justify-center">
+        <button class="truncate cursor-pointer" onclick={onClickProfile}>
+            <p class="text-lg">{profile.name}</p>
+        </button>
         <button
             class="truncate cursor-pointer"
             onclick={() => {
                 navigator.clipboard.writeText(pubKey);
-                push("Copied to clipboard");
-            }}>{pubKey}</button
+                push("PublicKey copied to clipboard");
+            }}
         >
+            <p class="text-xs">{pubKey}</p>
+        </button>
     </div>
 </aside>

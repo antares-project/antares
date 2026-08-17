@@ -7,21 +7,24 @@
     import { useStorage } from "$lib/storage.svelte";
     import { onMount } from "svelte";
     import { type ServerData } from "$lib/server.svelte";
-    import { Client, type Channel } from "harmon-lib";
+    import { Client, type Channel, type Profile } from "harmon-lib";
     import AddServerModal from "$lib/components/addServerModal.svelte";
     import Chat from "$lib/components/chat.svelte";
     import ChatsPanel from "$lib/components/chatsPanel.svelte";
     import SidePanel from "$lib/components/sidePanel.svelte";
+    import EditProfile from "$lib/components/editProfile.svelte";
 
     const auth = useAuth();
 
     const servers = useStorage<ServerData[]>("servers", []);
     const currentServer = useStorage<ServerData | undefined>("currentServer", undefined);
 
-    let client: Client | null = $state(null);
+    let client: Client | undefined = $state();
     let channelList: Channel[] = $state([]);
+    let profile: Profile | undefined = $state();
 
     let showAddServerModal = $state(false);
+    let isEditingProfile = $state(false);
 
     async function onClientConnect(client: Client) {
         info("onClientConnect");
@@ -36,6 +39,9 @@
         await client.auth(confirmValue.token);
 
         channelList = await client.listChannels();
+        profile = await client.getProfile();
+
+        isEditingProfile = profile == undefined;
     }
 
     async function onClientDisconnect() {
@@ -70,6 +76,18 @@
 </script>
 
 <div class="w-screen h-screen bg-gray-900 text-white">
+    {#if isEditingProfile}
+        <EditProfile
+            onEdit={async (name) => {
+                profile = await client?.updateProfile(name);
+                isEditingProfile = false;
+            }}
+            closable={!!profile}
+            onClose={() => {
+                isEditingProfile = false;
+            }}
+        />
+    {/if}
     {#if showAddServerModal}
         <AddServerModal
             onServerAdd={(v: ServerData) => {
@@ -88,10 +106,18 @@
                 Adicionar servidor
             </button>
         </div>
-    {:else if $currentServer && client}
+    {:else if $currentServer && client && profile}
         <div class="grid w-full h-full grid-cols-[auto_auto_1fr_auto]">
             <SidePanel {servers} {currentServer} onAddServer={() => (showAddServerModal = true)} />
-            <ChatsPanel {channelList} {currentServer} {client} />
+            <ChatsPanel
+                {channelList}
+                {currentServer}
+                {client}
+                {profile}
+                onClickProfile={() => {
+                    isEditingProfile = true;
+                }}
+            />
             {#if client.currentChannel}
                 {#key client.currentChannel}
                     <Chat {client} />
