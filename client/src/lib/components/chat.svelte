@@ -138,9 +138,18 @@
 			}}
 		>
 			<div class="flex w-full flex-row items-center">
-				<label class="flex h-10 w-10 cursor-pointer items-center justify-center" for="file-upload">
+				<label
+					class="flex h-10 w-10 cursor-pointer items-center justify-center"
+					for="file-upload"
+				>
 					<Fa class="text-2xl" icon={faUpload}></Fa>
-					<input bind:files={messageFiles} class="hidden" type="file" id="file-upload" multiple />
+					<input
+						bind:files={messageFiles}
+						class="hidden"
+						type="file"
+						id="file-upload"
+						multiple
+					/>
 				</label>
 				<textarea
 					bind:value={messageContent}

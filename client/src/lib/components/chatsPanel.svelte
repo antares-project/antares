@@ -43,9 +43,13 @@
 				class={`flex cursor-pointer items-center rounded-md p-2 hover:bg-gray-800 ${client.currentChannel?.id === channel.id ? "bg-gray-800" : ""}`}
 			>
 				{#if channel.type === "Text"}
-					<span class="flex items-center gap-0.5"><Fa icon={faHashtag} /> {channel.name}</span>
+					<span class="flex items-center gap-0.5"
+						><Fa icon={faHashtag} /> {channel.name}</span
+					>
 				{:else}
-					<span class="flex items-center gap-0.5"><Fa icon={faVolume} /> {channel.name}</span>
+					<span class="flex items-center gap-0.5"
+						><Fa icon={faVolume} /> {channel.name}</span
+					>
 				{/if}
 			</button>
 		{/each}

@@ -84,7 +84,9 @@
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<div
-					class="cursor-pointer px-3 py-2 {i === selected ? 'bg-zinc-700' : 'hover:bg-zinc-800'}"
+					class="cursor-pointer px-3 py-2 {i === selected
+						? 'bg-zinc-700'
+						: 'hover:bg-zinc-800'}"
 					onclick={() => addSelected(i)}
 				>
 					{suggestion}
