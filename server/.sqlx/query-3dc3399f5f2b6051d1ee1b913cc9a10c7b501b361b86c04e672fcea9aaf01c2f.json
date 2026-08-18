@@ -1,0 +1,44 @@
+{
+  "db_name": "SQLite",
+  "query": "\n\t\t\tSELECT\n\t\t\t\tid as \"id!: Uuid\",\n\t\t\t\tchannel_id as \"channel_id!: Uuid\",\n\t\t\t\tcontent as \"content!\",\n\t\t\t\tprofile_id as \"profile_id!: Uuid\",\n\t\t\t\tcreated_at as \"created_at!: time::OffsetDateTime\"\n\t\t\tFROM (\n\t\t\t\tSELECT\n\t\t\t\t\tid, channel_id, profile_id, content, created_at\n\t\t\t\tFROM\n\t\t\t\t\tmessages\n\t\t\t\tWHERE\n\t\t\t\t\tchannel_id = ?1 AND (?2 IS NULL OR id < ?2)\n\t\t\t\tORDER BY\n\t\t\t\t\tid DESC\n\t\t\t\tLIMIT\n\t\t\t\t\t?3\n\t\t\t)\n\t\t\tORDER BY id ASC\n\t\t",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: Uuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "channel_id!: Uuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "content!",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "profile_id!: Uuid",
+        "ordinal": 3,
+        "type_info": "Blob"
+      },
+      {
+        "name": "created_at!: time::OffsetDateTime",
+        "ordinal": 4,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "3dc3399f5f2b6051d1ee1b913cc9a10c7b501b361b86c04e672fcea9aaf01c2f"
+}

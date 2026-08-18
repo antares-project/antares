@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": "\n\t\t\tINSERT INTO files\n\t\t\t\t(id, name, hash, size, mime_type, created_at)\n\t\t\tVALUES\n\t\t\t\t(?, ?, ?, ?, ?, ?)\n\t\t\tRETURNING\n\t\t\t\tid as \"id!: Uuid\",\n\t\t\t\tname,\n                hash as \"hash!: crypto::Hash32\",\n                size,\n                mime_type,\n                counter,\n\t\t\t\tcreated_at as \"created_at!: time::OffsetDateTime\"\n\t\t;",
+  "query": "\n\t\tSELECT\n\t\t\tfile.id as \"id!: Uuid\",\n\t\t\tfile.name,\n\t\t\tfile.hash as \"hash!: crypto::Hash32\",\n\t\t\tfile.size,\n\t\t\tfile.mime_type,\n\t\t\tfile.counter,\n\t\t\tfile.created_at as \"created_at!: time::OffsetDateTime\"\n\t\tFROM\n\t\t\tfiles file\n\t\tINNER JOIN attachments\n\t\t\tattachment\n\t\tON\n\t\t\tattachment.file_id = file.id\n\t\tWHERE\n\t\t\tattachment.message_id = ?\n\t\t;",
   "describe": {
     "columns": [
       {
@@ -40,7 +40,7 @@
       }
     ],
     "parameters": {
-      "Right": 6
+      "Right": 1
     },
     "nullable": [
       false,
@@ -52,5 +52,5 @@
       false
     ]
   },
-  "hash": "cd02104e73b9fb298deb68052a4a8e3e97445ca7d9712394db7eb485617414ae"
+  "hash": "d906079aa105926d5ba241949dfb128e8077f20227935df0b52e9c99e8dfa8b7"
 }

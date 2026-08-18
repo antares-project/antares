@@ -19,21 +19,21 @@ pub async fn update_or_insert_profile(pool: &sqlx::sqlite::SqlitePool, public_ke
 	Ok(sqlx::query_as!(
 		Profile,
 		r#"
-            INSERT INTO profiles
-                (id, public_key, name, updated_at, created_at)
-            VALUES
-                (?, ?, ?, ?, ?)
+			INSERT INTO profiles
+				(id, public_key, name, updated_at, created_at)
+			VALUES
+				(?, ?, ?, ?, ?)
 			ON CONFLICT(public_key) DO UPDATE SET
 				name = excluded.name,
 				updated_at = excluded.updated_at
-            RETURNING
-                id as "id!: Uuid",
-                public_key as "public_key!: crypto::PublicKey",
-                name as "name!: String",
+			RETURNING
+				id as "id!: Uuid",
+				public_key as "public_key!: crypto::PublicKey",
+				name as "name!: String",
 				updated_at as "updated_at!: time::OffsetDateTime",
 				created_at as "created_at!: time::OffsetDateTime"
-            ;
-        "#,
+			;
+		"#,
 		id,
 		public_key,
 		name,

@@ -27,10 +27,10 @@ pub async fn create_file(pool: impl sqlx::SqliteExecutor<'_>, name: &str, hash: 
 			RETURNING
 				id as "id!: Uuid",
 				name,
-                hash as "hash!: crypto::Hash32",
-                size,
-                mime_type,
-                counter,
+				hash as "hash!: crypto::Hash32",
+				size,
+				mime_type,
+				counter,
 				created_at as "created_at!: time::OffsetDateTime"
 		;"#,
 		id,
@@ -51,7 +51,7 @@ pub async fn get_file(pool: impl sqlx::SqliteExecutor<'_>, id: Uuid) -> error::R
 			SELECT
 				id as "id!: Uuid",
 				name,
-                hash as "hash!: crypto::Hash32",
+			hash as "hash!: crypto::Hash32",
 				size,
 				mime_type,
 				counter,
@@ -74,7 +74,7 @@ pub async fn get_file_by_hash(pool: impl sqlx::SqliteExecutor<'_>, hash: crypto:
 			SELECT
 				id as "id!: Uuid",
 				name,
-                hash as "hash!: crypto::Hash32",
+				hash as "hash!: crypto::Hash32",
 				size,
 				mime_type,
 				counter,
@@ -94,21 +94,21 @@ pub async fn increment_file_counter(pool: impl sqlx::SqliteExecutor<'_>, id: Uui
 	Ok(sqlx::query_as!(
 		File,
 		r#"
-            UPDATE
+			UPDATE
 				files
-            SET
-                counter = counter + 1
-            WHERE
-                id = ?
-            RETURNING
-                id as "id!: Uuid",
+			SET
+				counter = counter + 1
+			WHERE
+				id = ?
+			RETURNING
+				id as "id!: Uuid",
 				name,
-                hash as "hash!: crypto::Hash32",
-                size,
-                mime_type,
-                counter,
+				hash as "hash!: crypto::Hash32",
+				size,
+				mime_type,
+				counter,
 				created_at as "created_at!: time::OffsetDateTime"
-        ;"#,
+		;"#,
 		id
 	)
 	.fetch_one(pool)
@@ -119,23 +119,23 @@ pub async fn get_files_from_message(pool: impl sqlx::SqliteExecutor<'_>, message
 	Ok(sqlx::query_as!(
 		File,
 		r#"
-        SELECT
-            file.id as "id!: Uuid",
+		SELECT
+			file.id as "id!: Uuid",
 			file.name,
-            file.hash as "hash!: crypto::Hash32",
-            file.size,
-            file.mime_type,
-            file.counter,
+			file.hash as "hash!: crypto::Hash32",
+			file.size,
+			file.mime_type,
+			file.counter,
 			file.created_at as "created_at!: time::OffsetDateTime"
-        FROM
-            files file
-        INNER JOIN attachments
+		FROM
+			files file
+		INNER JOIN attachments
 			attachment
-        ON
+		ON
 			attachment.file_id = file.id
-        WHERE
-            attachment.message_id = ?
-        ;"#,
+		WHERE
+			attachment.message_id = ?
+		;"#,
 		message_id
 	)
 	.fetch_all(pool)
@@ -155,10 +155,10 @@ pub async fn delete_unreferenced_files(pool: impl sqlx::SqliteExecutor<'_>, date
 		RETURNING
 			id as "id!: Uuid",
 			name,
-            hash as "hash!: crypto::Hash32",
-            size,
-            mime_type,
-            counter,
+			hash as "hash!: crypto::Hash32",
+			size,
+			mime_type,
+			counter,
 			created_at as "created_at!: time::OffsetDateTime"
 		;"#,
 		date

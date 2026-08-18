@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": "\n            INSERT INTO attachments\n                (id, message_id, file_id, created_at)\n            VALUES\n                (?, ?, ?, ?)\n            RETURNING\n                id as \"id!: Uuid\",\n                message_id as \"message_id!: Uuid\",\n                file_id as \"file_id!: Uuid\",\n                created_at as \"created_at!: time::OffsetDateTime\"\n            ;\n        ",
+  "query": "\n\t\t\tINSERT INTO attachments\n\t\t\t\t(id, message_id, file_id, created_at)\n\t\t\tVALUES\n\t\t\t\t(?, ?, ?, ?)\n\t\t\tRETURNING\n\t\t\t\tid as \"id!: Uuid\",\n\t\t\t\tmessage_id as \"message_id!: Uuid\",\n\t\t\t\tfile_id as \"file_id!: Uuid\",\n\t\t\t\tcreated_at as \"created_at!: time::OffsetDateTime\"\n\t\t\t;\n\t\t",
   "describe": {
     "columns": [
       {
@@ -34,5 +34,5 @@
       false
     ]
   },
-  "hash": "860342c267c365a5da21abc76ef591797c15e7061adb6c90936179ff3af0ae0e"
+  "hash": "a8a20e742d83c851e84e36fa1a5b9f7443614a0ceb97997909741173282346f8"
 }

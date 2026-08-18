@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": "\n\t\t\tSELECT\n                id as \"id!: Uuid\",\n                channel_id as \"channel_id!: Uuid\",\n                content as \"content!\",\n                profile_id as \"profile_id!: Uuid\",\n\t\t\t\tcreated_at as \"created_at!: time::OffsetDateTime\"\n\t\t\tFROM\n\t\t\t\tmessages\n\t\t\tWHERE\n\t\t\t\tid = ?1\n\t\t;",
+  "query": "\n\t\t\tSELECT\n\t\t\t\tid as \"id!: Uuid\",\n\t\t\t\tchannel_id as \"channel_id!: Uuid\",\n\t\t\t\tcontent as \"content!\",\n\t\t\t\tprofile_id as \"profile_id!: Uuid\",\n\t\t\t\tcreated_at as \"created_at!: time::OffsetDateTime\"\n\t\t\tFROM\n\t\t\t\tmessages\n\t\t\tWHERE\n\t\t\t\tid = ?1\n\t\t;",
   "describe": {
     "columns": [
       {
@@ -40,5 +40,5 @@
       false
     ]
   },
-  "hash": "5edf87095b54b1ebc14f4025c3f2071724a4c86cc058709386228e3f994f3348"
+  "hash": "cf7357de3fb8e04a79b4151d9e4cc460cbd771ec79b6d7f5ec3f0f4d4d67edf1"
 }

@@ -28,18 +28,18 @@ pub async fn create_message(pool: impl sqlx::SqliteExecutor<'_>, channel_id: Uui
 	Ok(sqlx::query_as!(
 		Message,
 		r#"
-            INSERT INTO messages
-                (id, channel_id, profile_id, content, created_at)
-            VALUES
-                (?, ?, ?, ?, ?)
-            RETURNING
-                id as "id!: Uuid",
-                channel_id as "channel_id!: Uuid",
-                profile_id as "profile_id!: Uuid",
-                content as "content!",
+			INSERT INTO messages
+				(id, channel_id, profile_id, content, created_at)
+			VALUES
+				(?, ?, ?, ?, ?)
+			RETURNING
+				id as "id!: Uuid",
+				channel_id as "channel_id!: Uuid",
+				profile_id as "profile_id!: Uuid",
+				content as "content!",
 				created_at as "created_at!: time::OffsetDateTime"
-            ;
-        "#,
+			;
+		"#,
 		id,
 		channel_id,
 		profile_id,
@@ -54,26 +54,26 @@ pub async fn get_messages(pool: impl sqlx::SqliteExecutor<'_>, channel_id: Uuid,
 	Ok(sqlx::query_as!(
 		Message,
 		r#"
-            SELECT
-                id as "id!: Uuid",
-                channel_id as "channel_id!: Uuid",
-                content as "content!",
-                profile_id as "profile_id!: Uuid",
+			SELECT
+				id as "id!: Uuid",
+				channel_id as "channel_id!: Uuid",
+				content as "content!",
+				profile_id as "profile_id!: Uuid",
 				created_at as "created_at!: time::OffsetDateTime"
-            FROM (
-                SELECT
-                    id, channel_id, profile_id, content, created_at
-                FROM
-                    messages
-                WHERE
-                    channel_id = ?1 AND (?2 IS NULL OR id < ?2)
-                ORDER BY
-                    id DESC
-                LIMIT
-                    ?3
-            )
-            ORDER BY id ASC
-        "#,
+			FROM (
+				SELECT
+					id, channel_id, profile_id, content, created_at
+				FROM
+					messages
+				WHERE
+					channel_id = ?1 AND (?2 IS NULL OR id < ?2)
+				ORDER BY
+					id DESC
+				LIMIT
+					?3
+			)
+			ORDER BY id ASC
+		"#,
 		channel_id,
 		before_id,
 		limit
@@ -87,10 +87,10 @@ pub async fn get_message(pool: impl sqlx::SqliteExecutor<'_>, id: Uuid) -> error
 		Message,
 		r#"
 			SELECT
-                id as "id!: Uuid",
-                channel_id as "channel_id!: Uuid",
-                content as "content!",
-                profile_id as "profile_id!: Uuid",
+				id as "id!: Uuid",
+				channel_id as "channel_id!: Uuid",
+				content as "content!",
+				profile_id as "profile_id!: Uuid",
 				created_at as "created_at!: time::OffsetDateTime"
 			FROM
 				messages
