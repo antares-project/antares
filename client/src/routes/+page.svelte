@@ -49,7 +49,7 @@
 		if (!current) return;
 
 		const publicKey = z32toUint8Array(current.publicKey);
-		
+
 		client = await Client.init(publicKey);
 
 		client.onOpen = async () => {
