@@ -20,11 +20,11 @@
                     <Fa class="text-2xl" icon={faDownload} />
                 </a>
                 {#if attachment.mime_type.startsWith("audio")}
-                    <audio class="rounded-lg" controls src={`${url}/files/${attachment.id}`}></audio>
+                    <audio class="rounded-lg h-20" controls src={`${url}/files/${attachment.id}`}></audio>
                 {:else if attachment.mime_type.startsWith("image")}
-                    <img class="rounded-lg" alt={attachment.hash} src={`${url}/files/${attachment.id}`} />
+                    <img class="rounded-lg h-64" alt={attachment.hash} src={`${url}/files/${attachment.id}`} />
                 {:else if attachment.mime_type.startsWith("video")}
-                    <video controls class="rounded-lg" src={`${url}/files/${attachment.id}`}>
+                    <video controls class="rounded-lg h-64" src={`${url}/files/${attachment.id}`}>
                         <track kind="captions" />
                     </video>
                 {:else}
