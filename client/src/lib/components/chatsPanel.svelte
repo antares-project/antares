@@ -10,12 +10,10 @@
 
 	const {
 		client,
-		channelList,
 		currentServer,
 		onClickProfile
 	}: {
 		client: Client;
-		channelList: Channel[];
 		currentServer: Writable<ServerData | undefined>;
 		onClickProfile: () => void;
 	} = $props();
@@ -35,7 +33,7 @@
 	</div>
 	<hr />
 	<div class="flex grow flex-col gap-2 p-2 text-gray-400">
-		{#each channelList as channel}
+		{#each client.channelList as channel}
 			<button
 				onclick={() => selectChannel(channel)}
 				class={`flex cursor-pointer items-center rounded-md p-2 hover:bg-gray-800 ${client.currentChannel?.id === channel.id ? "bg-gray-800" : ""}`}

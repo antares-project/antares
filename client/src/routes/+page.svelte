@@ -20,7 +20,6 @@
 	const currentServer = useStorage<ServerData | undefined>("currentServer", undefined);
 
 	let client: Client | undefined = $state();
-	let channelList: Channel[] = $state([]);
 
 	let showAddServerModal = $state(false);
 	let isEditingProfile = $state(false);
@@ -36,8 +35,6 @@
 		const confirmValue = await client.confirmChallenge(challengeValue.token, signature);
 
 		await client.auth(confirmValue.token);
-
-		channelList = await client.listChannels();
 
 		isEditingProfile = client.profile == undefined;
 	}
@@ -111,7 +108,6 @@
 		<div class="grid h-full w-full grid-cols-[auto_auto_1fr_auto]">
 			<SidePanel {servers} {currentServer} onAddServer={() => (showAddServerModal = true)} />
 			<ChatsPanel
-				{channelList}
 				{currentServer}
 				{client}
 				onClickProfile={() => {

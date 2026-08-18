@@ -7,6 +7,7 @@ type Session = {
 	isAdmin: boolean;
 	authToken: string;
 	currentChannel?: Channel;
+	channelList: Channel[];
 	profile?: Profile;
 };
 
@@ -61,12 +62,14 @@ export class Client {
 	async auth(token: string) {
 		const payload = await this._rpc.call("auth", token);
 		const profile = await this.getProfile(payload.public_key);
+		const channelList = await this.listChannels();
 
 		this._session = {
 			publicKey: z32toUint8Array(payload.public_key),
 			isAdmin: payload.is_admin,
 			authToken: token,
-			profile
+			profile,
+			channelList
 		};
 
 		return payload;
@@ -135,6 +138,10 @@ export class Client {
 
 	get publicKey() {
 		return this._session?.publicKey;
+	}
+
+	get channelList() {
+		return this._session?.channelList ?? [];
 	}
 
 	get currentChannel() {
