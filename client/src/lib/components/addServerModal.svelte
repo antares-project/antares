@@ -28,6 +28,7 @@
 	function submit() {
 		onServerAdd({
 			...serverInfo!,
+			publicKey,
 			url
 		});
 	}

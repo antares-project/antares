@@ -1,6 +1,7 @@
 import { uint8ArrayToZ32, z32toUint8Array } from "./utils.js";
 import { Client as JsonRPCClient } from "./jsonrpc.js";
 import { getInfo } from "./http.js";
+import { DNSClient } from "./pkdns.js";
 
 type Session = {
 	publicKey: Uint8Array;
@@ -24,7 +25,19 @@ export class Client {
 
 	public close: typeof JsonRPCClient.prototype.close;
 
-	constructor(url: string) {
+	static async init(publicKey: Uint8Array) {
+		const dns = new DNSClient();
+		const z32PublicKey = uint8ArrayToZ32(publicKey);
+		const url = await dns.resolveUrl(z32PublicKey);
+
+		if (!url) {
+			throw new Error("Could not resolve URL for the given public key");
+		}
+
+		return new Client(url);
+	}
+
+	private constructor(url: string) {
 		this._rpc = new JsonRPCClient(`${url}/ws`);
 		this._url = url;
 

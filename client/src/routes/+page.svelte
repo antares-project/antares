@@ -3,11 +3,11 @@
 	import { useAuth } from "$lib/auth";
 	import { info } from "$lib/log";
 	import { sha256, sign } from "harmon-lib/crypto";
-	import { stringToUint8Array } from "harmon-lib/utils";
+	import { stringToUint8Array, z32toUint8Array } from "harmon-lib/utils";
 	import { useStorage } from "$lib/storage.svelte";
 	import { onMount } from "svelte";
 	import { type ServerData } from "$lib/server.svelte";
-	import { Client, type Channel, type Profile } from "harmon-lib";
+	import { Client } from "harmon-lib";
 	import AddServerModal from "$lib/components/addServerModal.svelte";
 	import Chat from "$lib/components/chat.svelte";
 	import ChatsPanel from "$lib/components/chatsPanel.svelte";
@@ -44,13 +44,13 @@
 	}
 
 	async function onCurrentServerChange(current: ServerData | undefined) {
-		const url = current?.url;
-
 		client?.close();
 
-		if (!url) return;
+		if (!current) return;
 
-		client = new Client(url);
+		const publicKey = z32toUint8Array(current.publicKey);
+		
+		client = await Client.init(publicKey);
 
 		client.onOpen = async () => {
 			onClientConnect(client!);
