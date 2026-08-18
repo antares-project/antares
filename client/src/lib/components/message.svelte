@@ -37,7 +37,9 @@
 
 <div class="flex flex-row gap-1 p-2 hover:bg-gray-800">
 	<!-- Duas colunas, uma para a foto apenas -->
-	<div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500">
+	<div
+		class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-blue-400 bg-blue-500 font-semibold text-white shadow-md shadow-black/40"
+	>
 		{message.profile.name[0]}
 	</div>
 	<div class="shrink">
