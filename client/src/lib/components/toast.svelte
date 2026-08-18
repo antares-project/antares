@@ -53,16 +53,21 @@
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="fixed right-0 top-0 z-50 flex flex-col gap-2 p-4">
+<div class="fixed top-0 right-0 z-50 flex flex-col gap-2 p-4">
 	{#each toasts as [id, toast]}
 		<div
 			transition:fade
 			onmouseenter={() => toastWait(id)}
 			onmouseleave={() => toastContinue(id)}
-			class="flex gap-2 rounded-sm bg-gray-800 p-2 text-white border border-gray-600"
+			class="flex gap-2 rounded-sm border border-gray-600 bg-gray-800 p-2 text-white"
 		>
 			<p class="truncate">{toast.msg}</p>
-			<button onclick={() => cancel(id)} class="flex items-center justify-center h-6 w-6 rounded-sm bg-gray-600"> <Fa icon={faX}></Fa></button>
+			<button
+				onclick={() => cancel(id)}
+				class="flex h-6 w-6 items-center justify-center rounded-sm bg-gray-600"
+			>
+				<Fa icon={faX}></Fa></button
+			>
 		</div>
 	{/each}
 </div>

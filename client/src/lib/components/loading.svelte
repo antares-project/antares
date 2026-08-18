@@ -5,6 +5,6 @@
 	const { class: className }: { class?: string } = $props();
 </script>
 
-<div class={"flex justify-center items-center " + (className ?? "")}>
+<div class={"flex items-center justify-center " + (className ?? "")}>
 	<Fa spin icon={faCog} size="3x" />
 </div>
