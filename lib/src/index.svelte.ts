@@ -1,207 +1,206 @@
-
 import { uint8ArrayToZ32, z32toUint8Array } from "./utils.js";
 import { Client as JsonRPCClient } from "./jsonrpc.js";
 import { getInfo } from "./http.js";
 
 type Session = {
-    publicKey: Uint8Array,
-    isAdmin: boolean,
-    authToken: string,
-    currentChannel?: Channel,
-}
+	publicKey: Uint8Array;
+	isAdmin: boolean;
+	authToken: string;
+	currentChannel?: Channel;
+};
 
 export class Client {
-    private _url = $state("");
-    private _rpc: JsonRPCClient<ClientToServerEvents, ServerToClientEvents>;
-    private _session = $state<Session | undefined>();
+	private _url = $state("");
+	private _rpc: JsonRPCClient<ClientToServerEvents, ServerToClientEvents>;
+	private _session = $state<Session | undefined>();
 
-    public onOpen?: () => void;
-    public onClose?: () => void;
-    public onError?: () => void;
+	public onOpen?: () => void;
+	public onClose?: () => void;
+	public onError?: () => void;
 
-    public onMessageReceived?: (message: Message) => void;
+	public onMessageReceived?: (message: Message) => void;
 
-    public close: typeof JsonRPCClient.prototype.close;
+	public close: typeof JsonRPCClient.prototype.close;
 
-    constructor(url: string) {
-        this._rpc = new JsonRPCClient(`${url}/ws`);
-        this._url = url;
+	constructor(url: string) {
+		this._rpc = new JsonRPCClient(`${url}/ws`);
+		this._url = url;
 
-        this.close = this._rpc.close.bind(this._rpc);
+		this.close = this._rpc.close.bind(this._rpc);
 
-        this._rpc.onOpen = () => {
-            this.onOpen?.();
-        }
-        this._rpc.onClose = () => {
-            this._session = undefined;
+		this._rpc.onOpen = () => {
+			this.onOpen?.();
+		};
+		this._rpc.onClose = () => {
+			this._session = undefined;
 
-            this.onClose?.();
-        }
-        this._rpc.onError = () => {
-            this.onError?.();
-        }
+			this.onClose?.();
+		};
+		this._rpc.onError = () => {
+			this.onError?.();
+		};
 
-        this._rpc.on("messageReceived", (message) => {
-            this.onMessageReceived?.(message);
-        });
-    }
+		this._rpc.on("messageReceived", (message) => {
+			this.onMessageReceived?.(message);
+		});
+	}
 
-    async getInfo() {
-        return await getInfo(this._url);
-    }
+	async getInfo() {
+		return await getInfo(this._url);
+	}
 
-    async requestChallenge(publicKey: Uint8Array) {
-        return await this._rpc.call("requestChallenge", uint8ArrayToZ32(publicKey));
-    }
+	async requestChallenge(publicKey: Uint8Array) {
+		return await this._rpc.call("requestChallenge", uint8ArrayToZ32(publicKey));
+	}
 
-    async confirmChallenge(token: string, signature: Uint8Array) {
-        return await this._rpc.call("confirmChallenge", token, uint8ArrayToZ32(signature));
-    }
+	async confirmChallenge(token: string, signature: Uint8Array) {
+		return await this._rpc.call("confirmChallenge", token, uint8ArrayToZ32(signature));
+	}
 
-    async auth(token: string) {
-        const payload = await this._rpc.call("auth", token);
-        this._session = {
-            publicKey: z32toUint8Array(payload.public_key),
-            isAdmin: payload.is_admin,
-            authToken: token,
-        };
+	async auth(token: string) {
+		const payload = await this._rpc.call("auth", token);
+		this._session = {
+			publicKey: z32toUint8Array(payload.public_key),
+			isAdmin: payload.is_admin,
+			authToken: token
+		};
 
-        return payload;
-    }
+		return payload;
+	}
 
-    async joinChannel(id: string) {
-        if (!this._session) {
-            throw new Error("Not authenticated");
-        }
+	async joinChannel(id: string) {
+		if (!this._session) {
+			throw new Error("Not authenticated");
+		}
 
-        const channel = await this._rpc.call("joinChannel", id);
+		const channel = await this._rpc.call("joinChannel", id);
 
-        this._session.currentChannel = channel;
+		this._session.currentChannel = channel;
 
-        return channel;
-    }
+		return channel;
+	}
 
-    async loadMessages(beforeId?: string) {
-        return await this._rpc.call("loadMessages", beforeId);
-    }
+	async loadMessages(beforeId?: string) {
+		return await this._rpc.call("loadMessages", beforeId);
+	}
 
-    async sendMessage(message: string, attachments: string[]) {
-        return await this._rpc.call("sendMessage", message, attachments);
-    }
+	async sendMessage(message: string, attachments: string[]) {
+		return await this._rpc.call("sendMessage", message, attachments);
+	}
 
-    async createChannel(name: string) {
-        return await this._rpc.call("createChannel", name);
-    }
+	async createChannel(name: string) {
+		return await this._rpc.call("createChannel", name);
+	}
 
-    async deleteChannel(channelId: string) {
-        return await this._rpc.call("deleteChannel", channelId);
-    }
+	async deleteChannel(channelId: string) {
+		return await this._rpc.call("deleteChannel", channelId);
+	}
 
-    async listChannels() {
-        return await this._rpc.call("listChannels");
-    }
+	async listChannels() {
+		return await this._rpc.call("listChannels");
+	}
 
-    async getProfile(public_key?: string) {
-        if (!this.isAuth && !public_key) {
-            throw new Error("Not authenticated and no public key provided");
-        }
-        return await this._rpc.call("getProfile", public_key);
-    }
+	async getProfile(public_key?: string) {
+		if (!this.isAuth && !public_key) {
+			throw new Error("Not authenticated and no public key provided");
+		}
+		return await this._rpc.call("getProfile", public_key);
+	}
 
-    async updateProfile(name: string) {
-        if (!this.isAuth) {
-            throw new Error("Not authenticated");
-        }
-        return await this._rpc.call("updateProfile", name);
-    }
+	async updateProfile(name: string) {
+		if (!this.isAuth) {
+			throw new Error("Not authenticated");
+		}
+		return await this._rpc.call("updateProfile", name);
+	}
 
-    get url() {
-        return this._url;
-    }
+	get url() {
+		return this._url;
+	}
 
-    get isAuth() {
-        return !!this._session;
-    }
+	get isAuth() {
+		return !!this._session;
+	}
 
-    get isAdmin() {
-        return this._session?.isAdmin ?? false;
-    }
+	get isAdmin() {
+		return this._session?.isAdmin ?? false;
+	}
 
-    get publicKey() {
-        return this._session?.publicKey;
-    }
+	get publicKey() {
+		return this._session?.publicKey;
+	}
 
-    get currentChannel() {
-        return this._session?.currentChannel;
-    }
+	get currentChannel() {
+		return this._session?.currentChannel;
+	}
 }
 
 export type ChannelType = "Text" | "Voice";
 
 export interface Channel {
-    id: string,
-    name: string,
-    type: ChannelType,
+	id: string;
+	name: string;
+	type: ChannelType;
 }
 
 export interface Message {
-    id: string,
-    profile: Profile,
-    content: string,
-    attachments: MessageAttachment[]
+	id: string;
+	profile: Profile;
+	content: string;
+	attachments: MessageAttachment[];
 }
 
 export interface MessageAttachment {
-    id: string,
-    name: string,
-    mime_type: string,
-    size: number,
-    hash: string,
+	id: string;
+	name: string;
+	mime_type: string;
+	size: number;
+	hash: string;
 }
 
 export interface ResponseAuthChallenge {
-    token: string,
+	token: string;
 }
 
 export interface ResponseConfirmAuthChallenge {
-    token: string,
-    payload: AuthenticatedPayload,
+	token: string;
+	payload: AuthenticatedPayload;
 }
 
 export interface AuthenticatedPayload {
-    public_key: string,
-    is_admin: boolean,
-    exp: number,
+	public_key: string;
+	is_admin: boolean;
+	exp: number;
 }
 
 export interface Channel {
-    id: string,
-    name: string,
+	id: string;
+	name: string;
 }
 
 export interface Profile {
-    name: string,
-    public_key: string
+	name: string;
+	public_key: string;
 }
 
 interface ServerToClientEvents {
-    messageReceived(message: Message): void,
-    channelDeleted(channel: Channel): void
+	messageReceived(message: Message): void;
+	channelDeleted(channel: Channel): void;
 }
 
 interface ClientToServerEvents {
-    auth(token: string): AuthenticatedPayload,
-    requestChallenge(publicKey: string): ResponseAuthChallenge,
-    confirmChallenge(token: string, signature: string): ResponseConfirmAuthChallenge,
+	auth(token: string): AuthenticatedPayload;
+	requestChallenge(publicKey: string): ResponseAuthChallenge;
+	confirmChallenge(token: string, signature: string): ResponseConfirmAuthChallenge;
 
-    joinChannel(channelId: string): Channel,
-    sendMessage(message: string, attachments: string[]): void,
-    loadMessages(beforeId?: string): Message[],
+	joinChannel(channelId: string): Channel;
+	sendMessage(message: string, attachments: string[]): void;
+	loadMessages(beforeId?: string): Message[];
 
-    createChannel(name: string): Channel,
-    deleteChannel(channelId: string): Channel,
-    listChannels(): Channel[],
+	createChannel(name: string): Channel;
+	deleteChannel(channelId: string): Channel;
+	listChannels(): Channel[];
 
-    updateProfile(name: string): Profile,
-    getProfile(public_key?: string): Profile | undefined
+	updateProfile(name: string): Profile;
+	getProfile(public_key?: string): Profile | undefined;
 }

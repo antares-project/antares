@@ -1,13 +1,11 @@
 {
-  "compilerOptions": {
-    "module": "nodenext",
-    "target": "esnext",
-    "rootDir": "./src",
-    "outDir": "./build",
-    "strict": true,
-    "declaration": true,
-    "types": [
-      "svelte"
-    ]
-  }
+	"compilerOptions": {
+		"module": "nodenext",
+		"target": "esnext",
+		"rootDir": "./src",
+		"outDir": "./build",
+		"strict": true,
+		"declaration": true,
+		"types": ["svelte"]
+	}
 }
