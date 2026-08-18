@@ -29,6 +29,7 @@ pub enum Error {
 	InvalidLength,
 	Unauthorized,
 	ChannelDoesNotExist,
+	ProfileDoesNotExist,
 	NotInChannel,
 	NotFound,
 }

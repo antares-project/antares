@@ -44,7 +44,29 @@ pub async fn update_or_insert_profile(pool: &sqlx::sqlite::SqlitePool, public_ke
 	.await?)
 }
 
-pub async fn get_profile_by_public_key(pool: &sqlx::sqlite::SqlitePool, public_key: crypto::PublicKey) -> error::Result<Option<Profile>> {
+pub async fn get_profile(pool: impl sqlx::SqliteExecutor<'_>, id: Uuid) -> error::Result<Profile> {
+	Ok(sqlx::query_as!(
+		Profile,
+		r#"
+			SELECT
+				id as "id!: Uuid",
+				public_key as "public_key!: crypto::PublicKey",
+				name as "name!: String",
+				updated_at as "updated_at!: time::OffsetDateTime",
+				created_at as "created_at!: time::OffsetDateTime"
+			FROM
+				profiles
+			WHERE
+				id = ?
+			;
+		"#,
+		id
+	)
+	.fetch_one(pool)
+	.await?)
+}
+
+pub async fn get_profile_by_public_key(pool: impl sqlx::SqliteExecutor<'_>, public_key: crypto::PublicKey) -> error::Result<Option<Profile>> {
 	Ok(sqlx::query_as!(
 		Profile,
 		r#"

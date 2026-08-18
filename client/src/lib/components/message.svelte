@@ -7,7 +7,8 @@
 </script>
 
 <div class="flex flex-col hover:bg-gray-800 p-4">
-    <p>{message.content}</p>
+    <p class="text-1xl font-bold text-gray-300">{message.profile.name}</p>
+    <p class="text-sm">{message.content}</p>
     <div class="flex flex-col items-start gap-4">
         {#each message.attachments as attachment}
             <div class="group flex relative max-h-96">

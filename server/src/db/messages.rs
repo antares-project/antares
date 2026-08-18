@@ -6,6 +6,7 @@ use uuid::Uuid;
 pub struct Message {
 	pub id: Uuid,
 	pub channel_id: Uuid,
+	pub profile_id: Uuid,
 	pub content: String,
 	pub created_at: time::OffsetDateTime,
 }
@@ -14,12 +15,13 @@ pub struct Message {
 pub struct MessageWithFiles {
 	pub id: Uuid,
 	pub channel_id: Uuid,
+	pub profile_id: Uuid,
 	pub content: String,
 	pub files: Vec<db::File>,
 	pub created_at: time::OffsetDateTime,
 }
 
-pub async fn create_message(pool: impl sqlx::SqliteExecutor<'_>, channel_id: Uuid, content: &str) -> error::Result<Message> {
+pub async fn create_message(pool: impl sqlx::SqliteExecutor<'_>, channel_id: Uuid, profile_id: Uuid, content: &str) -> error::Result<Message> {
 	let id = Uuid::now_v7();
 	let created_at = time::OffsetDateTime::now_utc();
 
@@ -27,18 +29,20 @@ pub async fn create_message(pool: impl sqlx::SqliteExecutor<'_>, channel_id: Uui
 		Message,
 		r#"
             INSERT INTO messages
-                (id, channel_id, content, created_at)
+                (id, channel_id, profile_id, content, created_at)
             VALUES
-                (?, ?, ?, ?)
+                (?, ?, ?, ?, ?)
             RETURNING
                 id as "id!: Uuid",
                 channel_id as "channel_id!: Uuid",
+                profile_id as "profile_id!: Uuid",
                 content as "content!",
 				created_at as "created_at!: time::OffsetDateTime"
             ;
         "#,
 		id,
 		channel_id,
+		profile_id,
 		content,
 		created_at
 	)
@@ -54,10 +58,11 @@ pub async fn get_messages(pool: impl sqlx::SqliteExecutor<'_>, channel_id: Uuid,
                 id as "id!: Uuid",
                 channel_id as "channel_id!: Uuid",
                 content as "content!",
+                profile_id as "profile_id!: Uuid",
 				created_at as "created_at!: time::OffsetDateTime"
             FROM (
                 SELECT
-                    id, channel_id, content, created_at
+                    id, channel_id, profile_id, content, created_at
                 FROM
                     messages
                 WHERE
@@ -85,6 +90,7 @@ pub async fn get_message(pool: impl sqlx::SqliteExecutor<'_>, id: Uuid) -> error
                 id as "id!: Uuid",
                 channel_id as "channel_id!: Uuid",
                 content as "content!",
+                profile_id as "profile_id!: Uuid",
 				created_at as "created_at!: time::OffsetDateTime"
 			FROM
 				messages
@@ -95,36 +101,4 @@ pub async fn get_message(pool: impl sqlx::SqliteExecutor<'_>, id: Uuid) -> error
 	)
 	.fetch_one(pool)
 	.await?)
-}
-
-pub async fn get_message_with_files(pool: impl sqlx::SqliteExecutor<'_> + Copy, id: Uuid) -> error::Result<MessageWithFiles> {
-	let message = get_message(pool, id).await?;
-	let files = db::get_files_from_message(pool, message.id).await?;
-
-	Ok(MessageWithFiles {
-		id,
-		channel_id: message.channel_id,
-		content: message.content,
-		created_at: message.created_at,
-		files,
-	})
-}
-
-pub async fn get_messages_with_files(pool: impl sqlx::SqliteExecutor<'_> + Copy, channel_id: Uuid, before_id: Option<Uuid>, limit: i64) -> error::Result<Vec<MessageWithFiles>> {
-	let mut result = Vec::new();
-
-	let messages = get_messages(pool, channel_id, before_id, limit).await?;
-	for message in messages {
-		let files = db::get_files_from_message(pool, message.id).await?;
-
-		result.push(MessageWithFiles {
-			id: message.id,
-			channel_id: message.channel_id,
-			content: message.content,
-			created_at: message.created_at,
-			files,
-		});
-	}
-
-	Ok(result)
 }

@@ -20,6 +20,7 @@ pub struct LoadMessagesParams {
 pub struct Message {
 	pub id: Uuid,
 	pub channel_id: Uuid,
+	pub profile: profile::Profile,
 	pub content: String,
 	pub attachments: Vec<MessageAttachment>,
 }
@@ -35,10 +36,9 @@ pub struct MessageAttachment {
 
 pub async fn send_message(app: wspc::App, socket: wspc::Socket, params: wspc::Params<SendMessageParams>) -> error::Result<()> {
 	let state = app.get_state::<app::AppState>().unwrap();
-
-	if !auth::is_auth(&socket) {
+	let Some(auth) = socket.get_state::<auth::AuthenticatedPayload>() else {
 		return Err(error::Error::Unauthorized);
-	}
+	};
 
 	let Some(channel) = socket.get_state::<channel::ChannelIdentifier>() else {
 		return Err(error::Error::NotInChannel);
@@ -46,7 +46,10 @@ pub async fn send_message(app: wspc::App, socket: wspc::Socket, params: wspc::Pa
 
 	let mut tx = state.db_pool.begin().await?;
 
-	let message = db::create_message(&mut *tx, channel.0, &params.content).await?;
+	let Some(profile) = db::get_profile_by_public_key(&mut *tx, auth.public_key).await? else {
+		return Err(error::Error::ProfileDoesNotExist);
+	};
+	let message = db::create_message(&mut *tx, channel.0, profile.id, &params.content).await?;
 
 	for file_id in &params.attachments {
 		db::create_attachment(&mut *tx, message.id, *file_id).await?;
@@ -55,7 +58,17 @@ pub async fn send_message(app: wspc::App, socket: wspc::Socket, params: wspc::Pa
 
 	tx.commit().await?;
 
-	let message: Message = db::get_message_with_files(&state.db_pool, message.id).await?.into();
+	let message = db::get_message(&state.db_pool, message.id).await?;
+	let profile = db::get_profile(&state.db_pool, message.profile_id).await?;
+	let files = db::get_files_from_message(&state.db_pool, message.id).await?;
+
+	let message = Message {
+		id: message.id,
+		channel_id: message.channel_id,
+		profile: profile.into(),
+		content: message.content,
+		attachments: files.into_iter().map(Into::into).collect(),
+	};
 
 	app.room(channel).emit("messageReceived", (message,))?;
 
@@ -73,25 +86,22 @@ pub async fn load_messages(app: wspc::App, socket: wspc::Socket, params: wspc::P
 		return Err(error::Error::NotInChannel);
 	};
 
-	let messages: Vec<Message> = db::get_messages_with_files(&state.db_pool, channel.0, params.before_id, MESSAGE_PAGE_SIZE)
-		.await?
-		.into_iter()
-		.map(Into::into)
-		.collect();
+	let mut messages = Vec::new();
+
+	for message in db::get_messages(&state.db_pool, channel.0, params.before_id, MESSAGE_PAGE_SIZE).await? {
+		let profile = db::get_profile(&state.db_pool, message.profile_id).await?;
+		let files = db::get_files_from_message(&state.db_pool, message.id).await?;
+
+		messages.push(Message {
+			id: message.id,
+			channel_id: message.channel_id,
+			profile: profile.into(),
+			content: message.content,
+			attachments: files.into_iter().map(Into::into).collect(),
+		});
+	}
 
 	Ok(messages)
-}
-
-impl From<db::MessageWithFiles> for Message {
-	#[inline(always)]
-	fn from(value: db::MessageWithFiles) -> Self {
-		Self {
-			id: value.id,
-			channel_id: value.channel_id,
-			content: value.content,
-			attachments: value.files.into_iter().map(Into::into).collect(),
-		}
-	}
 }
 
 impl From<db::File> for MessageAttachment {

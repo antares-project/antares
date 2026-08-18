@@ -146,6 +146,7 @@ export interface Channel {
 
 export interface Message {
     id: string,
+    profile: Profile,
     content: string,
     attachments: MessageAttachment[]
 }
