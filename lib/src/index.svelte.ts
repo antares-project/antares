@@ -66,7 +66,7 @@ export class Client {
 			publicKey: z32toUint8Array(payload.public_key),
 			isAdmin: payload.is_admin,
 			authToken: token,
-			profile,
+			profile
 		};
 
 		return payload;
@@ -117,7 +117,7 @@ export class Client {
 		}
 		const profile = await this._rpc.call("updateProfile", name);
 		this._session!.profile = profile;
-		
+
 		return profile;
 	}
 
