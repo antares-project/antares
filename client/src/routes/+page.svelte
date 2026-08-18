@@ -21,7 +21,6 @@
 
 	let client: Client | undefined = $state();
 	let channelList: Channel[] = $state([]);
-	let profile: Profile | undefined = $state();
 
 	let showAddServerModal = $state(false);
 	let isEditingProfile = $state(false);
@@ -39,9 +38,8 @@
 		await client.auth(confirmValue.token);
 
 		channelList = await client.listChannels();
-		profile = await client.getProfile();
 
-		isEditingProfile = profile == undefined;
+		isEditingProfile = client.profile == undefined;
 	}
 
 	async function onClientDisconnect() {
@@ -79,10 +77,10 @@
 	{#if isEditingProfile}
 		<EditProfile
 			onEdit={async (name) => {
-				profile = await client?.updateProfile(name);
+				await client?.updateProfile(name);
 				isEditingProfile = false;
 			}}
-			closable={!!profile}
+			closable={!!client?.profile}
 			onClose={() => {
 				isEditingProfile = false;
 			}}
@@ -109,14 +107,13 @@
 				Adicionar servidor
 			</button>
 		</div>
-	{:else if $currentServer && client && profile}
+	{:else if $currentServer && client && client.profile}
 		<div class="grid h-full w-full grid-cols-[auto_auto_1fr_auto]">
 			<SidePanel {servers} {currentServer} onAddServer={() => (showAddServerModal = true)} />
 			<ChatsPanel
 				{channelList}
 				{currentServer}
 				{client}
-				{profile}
 				onClickProfile={() => {
 					isEditingProfile = true;
 				}}

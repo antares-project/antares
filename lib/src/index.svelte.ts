@@ -7,6 +7,7 @@ type Session = {
 	isAdmin: boolean;
 	authToken: string;
 	currentChannel?: Channel;
+	profile?: Profile;
 };
 
 export class Client {
@@ -59,10 +60,13 @@ export class Client {
 
 	async auth(token: string) {
 		const payload = await this._rpc.call("auth", token);
+		const profile = await this.getProfile(payload.public_key);
+
 		this._session = {
 			publicKey: z32toUint8Array(payload.public_key),
 			isAdmin: payload.is_admin,
-			authToken: token
+			authToken: token,
+			profile,
 		};
 
 		return payload;
@@ -111,7 +115,10 @@ export class Client {
 		if (!this.isAuth) {
 			throw new Error("Not authenticated");
 		}
-		return await this._rpc.call("updateProfile", name);
+		const profile = await this._rpc.call("updateProfile", name);
+		this._session!.profile = profile;
+		
+		return profile;
 	}
 
 	get url() {
@@ -132,6 +139,10 @@ export class Client {
 
 	get currentChannel() {
 		return this._session?.currentChannel;
+	}
+
+	get profile() {
+		return this._session?.profile;
 	}
 }
 

@@ -12,13 +12,11 @@
 		client,
 		channelList,
 		currentServer,
-		profile,
 		onClickProfile
 	}: {
 		client: Client;
 		channelList: Channel[];
 		currentServer: Writable<ServerData | undefined>;
-		profile: Profile;
 		onClickProfile: () => void;
 	} = $props();
 
@@ -57,7 +55,7 @@
 	<hr />
 	<div class="flex h-20 flex-col justify-center p-4">
 		<button class="cursor-pointer truncate" onclick={onClickProfile}>
-			<p class="text-lg">{profile.name}</p>
+			<p class="text-lg">{client.profile?.name}</p>
 		</button>
 		<button
 			class="cursor-pointer truncate"
