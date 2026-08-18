@@ -55,7 +55,7 @@ jobs:
 
       - name: Commit formatting changes
         run: |
-          if git diff --quiet; then
+          if git diff --quiet -- . ':(exclude)**/Cargo.lock' ':(exclude)**/package-lock.json'; then
             echo "No formatting changes"
             exit 0
           fi
