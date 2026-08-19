@@ -2,8 +2,8 @@
 	import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 	import { getInfo } from "harmon-lib/http";
 	import { DNSClient } from "harmon-lib/pkdns";
-	import Fa from "svelte-fa";
 	import Loading from "./loading.svelte";
+	import Fa from "svelte-fa";
 
 	const { onClick, publicKey } = $props();
 

@@ -49,13 +49,13 @@ export class DNSClient {
 
 	async resolve(
 		public_key_str: string,
-		policy: ResolvePolicy = ResolvePolicy.NetworkOnly
+		policy: ResolvePolicy = ResolvePolicy.CacheFirst
 	): Promise<DnsEntry[] | null> {
 		const value = await this.pkarrClient.resolve(public_key_str, policy);
 		return (value?.records ?? []) as DnsEntry[];
 	}
 
-	async resolveUrl(url: string) {
+	async resolveUrl(url: string, policy: ResolvePolicy = ResolvePolicy.CacheFirst) {
 		const haveProtocol =
 			url.startsWith("https://") ||
 			url.startsWith("http://") ||
@@ -64,7 +64,7 @@ export class DNSClient {
 		const urlObject = new URL(haveProtocol ? url : `https://${url}`);
 
 		const resolve = async (publicKey: string) => {
-			const entries = await this.resolve(publicKey);
+			const entries = await this.resolve(publicKey, policy);
 
 			for (const entry of entries ?? []) {
 				switch (entry.rdata.type) {
