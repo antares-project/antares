@@ -26,11 +26,7 @@
 	}
 
 	function submit() {
-		onServerAdd({
-			...serverInfo!,
-			publicKey,
-			url
-		});
+		onServerAdd(publicKey);
 	}
 
 	$effect(() => {

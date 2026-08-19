@@ -6,7 +6,6 @@
 	import { stringToUint8Array, z32toUint8Array } from "harmon-lib/utils";
 	import { useStorage } from "$lib/storage.svelte";
 	import { onMount } from "svelte";
-	import { type ServerData } from "$lib/server.svelte";
 	import { Client } from "harmon-lib";
 	import AddServerModal from "$lib/components/addServerModal.svelte";
 	import Chat from "$lib/components/chat.svelte";
@@ -16,7 +15,7 @@
 
 	const auth = useAuth();
 
-	const servers = useStorage<ServerData[]>("servers", []);
+	const servers = useStorage<string[]>("servers", []);
 	const currentServer = useStorage<string | undefined>("currentServer", undefined);
 
 	let client: Client | undefined = $state();
@@ -64,6 +63,7 @@
 	onMount(() => {
 		if (!auth) {
 			goto("/login");
+			return;
 		}
 
 		currentServer.subscribe(onCurrentServerChange);
@@ -85,8 +85,8 @@
 	{/if}
 	{#if showAddServerModal}
 		<AddServerModal
-			onServerAdd={(v: ServerData) => {
-				servers.update((s) => [...s, v]);
+			onServerAdd={(pubKey: string) => {
+				servers.update((p) => [...p, pubKey]);
 				showAddServerModal = false;
 			}}
 			onClose={() => {
