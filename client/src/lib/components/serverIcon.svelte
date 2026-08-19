@@ -38,7 +38,7 @@
 {:catch error}
 	<button
 		onclick={onClick}
-		class="bg-zinc-600 group relative flex cursor-pointer flex-col items-center justify-center h-12 w-12 rounded-xl"
+		class="group relative flex h-12 w-12 cursor-pointer flex-col items-center justify-center rounded-xl bg-zinc-600"
 	>
 		<Fa icon={faTriangleExclamation} />
 		<div
