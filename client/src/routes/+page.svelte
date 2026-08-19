@@ -99,14 +99,22 @@
 			<h1 class="text-2xl">Nenhum servidor adicionado</h1>
 			<button
 				class="cursor-pointer rounded-md bg-gray-800 p-2 text-white"
-				onclick={() => (showAddServerModal = true)}
+				onclick={() => {
+					showAddServerModal = true;
+				}}
 			>
 				Adicionar servidor
 			</button>
 		</div>
-	{:else if $currentServer && client && client.profile}
+	{:else if client}
 		<div class="grid h-full w-full grid-cols-[auto_auto_1fr_auto]">
-			<SidePanel {servers} {currentServer} onAddServer={() => (showAddServerModal = true)} />
+			<SidePanel
+				{servers}
+				{currentServer}
+				onAddServer={() => {
+					showAddServerModal = true;
+				}}
+			/>
 			<ChatsPanel
 				{client}
 				onClickProfile={() => {
@@ -121,7 +129,13 @@
 		</div>
 	{:else}
 		<div class="flex h-full w-full flex-row">
-			<SidePanel {servers} {currentServer} onAddServer={() => (showAddServerModal = true)} />
+			<SidePanel
+				{servers}
+				{currentServer}
+				onAddServer={() => {
+					showAddServerModal = true;
+				}}
+			/>
 			<div class="flex h-full w-full flex-col items-center justify-center gap-4">
 				<h1 class="text-center text-2xl">Selecione um servidor</h1>
 			</div>
