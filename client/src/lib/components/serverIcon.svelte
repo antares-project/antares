@@ -3,6 +3,7 @@
 	import { getInfo } from "harmon-lib/http";
 	import { DNSClient } from "harmon-lib/pkdns";
 	import Fa from "svelte-fa";
+	import Loading from "./loading.svelte";
 
 	const { onClick, publicKey } = $props();
 
@@ -23,7 +24,19 @@
 	const data = get_data();
 </script>
 
-{#await data then { data, url }}
+{#await data}
+	<button
+		onclick={onClick}
+		class="group relative flex h-12 w-12 cursor-pointer flex-col items-center justify-center rounded-xl bg-zinc-600"
+	>
+		<Loading />
+		<div
+			class="pointer-events-none absolute left-full ml-2 flex translate-x-2 items-center justify-center rounded-md bg-slate-700 p-1 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100"
+		>
+			<p>Loading...</p>
+		</div>
+	</button>
+{:then { data, url }}
 	<button
 		onclick={onClick}
 		class="group relative flex cursor-pointer flex-col items-center justify-center rounded-xl"

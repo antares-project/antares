@@ -78,8 +78,11 @@ export class Client {
 
 	async auth(token: string) {
 		const payload = await this._rpc.call("auth", token);
-		const profile = await this.getProfile(payload.public_key);
-		const channelList = await this.listChannels();
+
+		let [profile, channelList] = await Promise.all([
+			this.getProfile(payload.public_key),
+			this.listChannels()
+		]);
 
 		this._session = {
 			publicKey: z32toUint8Array(payload.public_key),

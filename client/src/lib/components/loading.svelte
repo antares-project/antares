@@ -6,5 +6,5 @@
 </script>
 
 <div class={"flex items-center justify-center " + (className ?? "")}>
-	<Fa spin icon={faCog} size="3x" />
+	<Fa spin icon={faCog} size="2x" />
 </div>
