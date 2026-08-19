@@ -16,6 +16,7 @@
 
 	async function submit(event: SubmitEvent) {
 		event.preventDefault();
+
 		onEdit?.(name);
 	}
 </script>
@@ -25,7 +26,7 @@
 		class="relative flex flex-col items-center justify-center gap-4 rounded-md border border-gray-800 bg-gray-900 p-4"
 		onsubmit={submit}
 	>
-		{#if closable ?? false}
+		{#if closable}
 			<button
 				type="button"
 				class="absolute top-4 right-4 cursor-pointer text-white"
@@ -44,8 +45,8 @@
 				class="rounded-md bg-gray-800 p-2 text-white"
 			/>
 		</div>
-		<button type="submit" class="w-full cursor-pointer rounded-md bg-gray-800 p-2 text-white"
-			>Save</button
-		>
+		<button type="submit" class="w-full cursor-pointer rounded-md bg-gray-800 p-2 text-white">
+			Save
+		</button>
 	</form>
 </div>

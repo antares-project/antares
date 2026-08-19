@@ -17,7 +17,7 @@
 	const auth = useAuth();
 
 	const servers = useStorage<ServerData[]>("servers", []);
-	const currentServer = useStorage<ServerData | undefined>("currentServer", undefined);
+	const currentServer = useStorage<string | undefined>("currentServer", undefined);
 
 	let client: Client | undefined = $state();
 
@@ -43,12 +43,12 @@
 		info("OnSocketDisconnect");
 	}
 
-	async function onCurrentServerChange(current: ServerData | undefined) {
+	async function onCurrentServerChange(z32publicKey: string | undefined) {
 		client?.close();
 
-		if (!current) return;
+		if (!z32publicKey) return;
 
-		const publicKey = z32toUint8Array(current.publicKey);
+		const publicKey = z32toUint8Array(z32publicKey);
 
 		client = await Client.init(publicKey);
 
@@ -65,9 +65,9 @@
 		if (!auth) {
 			goto("/login");
 		}
-	});
 
-	currentServer.subscribe(onCurrentServerChange);
+		currentServer.subscribe(onCurrentServerChange);
+	});
 </script>
 
 <div class="h-screen w-screen bg-gray-900 text-white">
@@ -108,7 +108,6 @@
 		<div class="grid h-full w-full grid-cols-[auto_auto_1fr_auto]">
 			<SidePanel {servers} {currentServer} onAddServer={() => (showAddServerModal = true)} />
 			<ChatsPanel
-				{currentServer}
 				{client}
 				onClickProfile={() => {
 					isEditingProfile = true;

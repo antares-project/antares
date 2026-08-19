@@ -16,6 +16,7 @@ export class Client {
 	private _url = $state("");
 	private _rpc: JsonRPCClient<ClientToServerEvents, ServerToClientEvents>;
 	private _session = $state<Session | undefined>();
+	private _serverInfo?: ServerInfo;
 
 	public onOpen?: () => void;
 	public onClose?: () => void;
@@ -43,11 +44,14 @@ export class Client {
 
 		this.close = this._rpc.close.bind(this._rpc);
 
-		this._rpc.onOpen = () => {
+		this._rpc.onOpen = async () => {
+			this._serverInfo = await this.getInfo();
+
 			this.onOpen?.();
 		};
 		this._rpc.onClose = () => {
 			this._session = undefined;
+			this._serverInfo = undefined;
 
 			this.onClose?.();
 		};
@@ -164,6 +168,10 @@ export class Client {
 	get profile() {
 		return this._session?.profile;
 	}
+
+	get serverInfo() {
+		return this._serverInfo;
+	}
 }
 
 export type ChannelType = "Text" | "Voice";
@@ -211,6 +219,11 @@ export interface Channel {
 
 export interface Profile {
 	name: string;
+	public_key: string;
+}
+
+export interface ServerInfo {
+	title: string;
 	public_key: string;
 }
 

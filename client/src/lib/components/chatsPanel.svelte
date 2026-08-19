@@ -1,20 +1,16 @@
 <script lang="ts">
-	import type { ServerData } from "$lib/server.svelte";
-	import type { Channel, Client, Profile } from "harmon-lib";
-	import type { Writable } from "svelte/store";
+	import type { Channel, Client } from "harmon-lib";
 	import { useAuth } from "$lib/auth";
 	import { push } from "./toast.svelte";
-	import Fa from "svelte-fa";
 	import { faHashtag, faVolume } from "@fortawesome/free-solid-svg-icons";
 	import { uint8ArrayToZ32 } from "harmon-lib/utils";
+	import Fa from "svelte-fa";
 
 	const {
 		client,
-		currentServer,
 		onClickProfile
 	}: {
 		client: Client;
-		currentServer: Writable<ServerData | undefined>;
 		onClickProfile: () => void;
 	} = $props();
 
@@ -28,7 +24,7 @@
 
 <aside class="flex w-60 flex-col border-r">
 	<div class="flex flex-col items-center justify-center gap-2 p-4">
-		<h1 class="text-center">{$currentServer?.title}</h1>
+		<h1 class="text-center">{client.serverInfo?.title}</h1>
 		<h3 class="text-center text-sm">{client.currentChannel?.name}</h3>
 	</div>
 	<hr />

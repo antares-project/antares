@@ -9,11 +9,11 @@
 	}: {
 		onAddServer: () => void;
 		servers: Writable<ServerData[]>;
-		currentServer: Writable<ServerData | undefined>;
+		currentServer: Writable<string | undefined>;
 	} = $props();
 </script>
 
-{#snippet serverIcon(onClick: () => void, data: ServerData)}
+{#snippet serverIcon(data: ServerData, onClick: () => void)}
 	<button
 		onclick={onClick}
 		class="group relative flex cursor-pointer flex-col items-center justify-center"
@@ -30,9 +30,9 @@
 <aside class="flex w-16 flex-col gap-2 border-r p-2">
 	<div class="flex h-full flex-col gap-2">
 		{#each $servers as data}
-			{@render serverIcon(() => {
-				currentServer.set(data);
-			}, data)}
+			{@render serverIcon(data, () => {
+				currentServer.set(data.publicKey);
+			})}
 		{/each}
 	</div>
 	<button onclick={onAddServer} class="h-12 w-12 cursor-pointer text-center">+</button>
