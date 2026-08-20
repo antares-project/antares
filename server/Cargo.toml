@@ -35,7 +35,7 @@ rand = { version = "0.10.1", features = ["sys_rng"] }
 ed25519-dalek = { version = "2.2.0", features = ["serde"] }
 sha2 = "0.11.0"
 jsonwebtoken = "9.3.1"
-wspc = { version = "0.4.1", features = ["uuid_v7"] }
+wspc = { version = "0.4.3", features = ["uuid_v7"] }
 pkarr = { version = "8.0.0", features = ["reqwest-builder"] }
 
 [profile.release]
