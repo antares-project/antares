@@ -6,6 +6,8 @@ pub async fn connect(socket: wspc::Socket) -> error::Result<()> {
 	socket.join("global")?;
 	socket.join(socket.id())?;
 
+	socket.send("connectionReady", (socket.id(),))?;
+
 	Ok(())
 }
 

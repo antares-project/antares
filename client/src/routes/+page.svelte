@@ -24,7 +24,7 @@
 	let isEditingProfile = $state(false);
 
 	async function onClientConnect(client: Client) {
-		info("onClientConnect");
+		info("client connect as id: " + client.id);
 
 		const challengeValue = await client.requestChallenge(auth?.publicKey!);
 
@@ -51,12 +51,12 @@
 
 		client = await Client.init(publicKey);
 
-		client.onOpen = async () => {
-			onClientConnect(client!);
+		client.onConnectionReady = async () => {
+			await onClientConnect(client!);
 		};
 
-		client.onClose = () => {
-			onClientDisconnect();
+		client.onConnectionClosed = async () => {
+			await onClientDisconnect();
 		};
 	}
 
