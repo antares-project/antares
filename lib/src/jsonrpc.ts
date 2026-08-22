@@ -89,6 +89,11 @@ export class Client<
 		};
 
 		this.socket.onclose = () => {
+			for (const [_, handler] of this.pending) {
+				handler.reject(new Error("Connection closed"));
+			}
+
+			this.pending.clear();
 			this.onClose?.();
 		};
 
