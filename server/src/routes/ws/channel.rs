@@ -36,6 +36,18 @@ pub struct JoinChannelParams {
 	pub channel_id: ChannelIdentifier,
 }
 
+#[derive(Debug, serde::Serialize)]
+pub struct ChannelMember {
+	pub profile: profile::Profile,
+	pub socket_id: Uuid,
+}
+
+#[derive(Debug, serde::Serialize)]
+pub struct JoinChannelResponse {
+	pub channel: Channel,
+	pub members: Vec<ChannelMember>,
+}
+
 #[derive(Debug, Clone, Copy, serde::Deserialize, serde::Serialize)]
 #[serde(transparent)]
 pub struct ChannelIdentifier(pub Uuid);
@@ -76,14 +88,12 @@ pub async fn list_channels(app: wspc::App) -> error::Result<Vec<Channel>> {
 	Ok(channels)
 }
 
-pub async fn join_channel(app: wspc::App, socket: wspc::Socket, params: wspc::Params<JoinChannelParams>) -> error::Result<Channel> {
+pub async fn join_channel(app: wspc::App, socket: wspc::Socket, params: wspc::Params<JoinChannelParams>) -> error::Result<JoinChannelResponse> {
 	let state = app.get_state::<app::AppState>().unwrap();
 
 	if !auth::is_auth(&socket) {
 		return Err(error::Error::Unauthorized);
 	}
-
-	let channel = db::get_channel(&state.db_pool, *params.channel_id).await?.into();
 
 	if let Some(channel) = socket.get_state::<ChannelIdentifier>() {
 		socket.leave(channel)?;
@@ -92,7 +102,23 @@ pub async fn join_channel(app: wspc::App, socket: wspc::Socket, params: wspc::Pa
 	socket.join(params.channel_id)?;
 	socket.set_state(params.channel_id);
 
-	Ok(channel)
+	let channel: Channel = db::get_channel(&state.db_pool, *params.channel_id).await?.into();
+	let sockets = app.room(params.channel_id).sockets();
+	let mut members = Vec::new();
+
+	for socket in sockets {
+		let Some(auth) = socket.get_state::<auth::AuthenticatedPayload>() else { continue };
+		let Some(profile) = db::get_profile_by_public_key(&state.db_pool, auth.public_key).await? else {
+			continue;
+		};
+
+		members.push(ChannelMember {
+			profile: profile.into(),
+			socket_id: socket.id(),
+		});
+	}
+
+	Ok(JoinChannelResponse { channel, members })
 }
 
 impl fmt::Display for ChannelIdentifier {

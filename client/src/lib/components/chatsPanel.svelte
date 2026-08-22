@@ -25,14 +25,14 @@
 <aside class="flex w-60 flex-col border-r">
 	<div class="flex flex-col items-center justify-center gap-2 p-4">
 		<h1 class="text-center">{client.serverInfo?.title}</h1>
-		<h3 class="text-center text-sm">{client.currentChannel?.name}</h3>
+		<h3 class="text-center text-sm">{client.currentChannel?.channel.name}</h3>
 	</div>
 	<hr />
 	<div class="flex grow flex-col gap-2 p-2 text-gray-400">
 		{#each client.channelList as channel}
 			<button
 				onclick={() => selectChannel(channel)}
-				class={`flex cursor-pointer items-center rounded-md p-2 hover:bg-gray-800 ${client.currentChannel?.id === channel.id ? "bg-gray-800" : ""}`}
+				class={`flex cursor-pointer items-center rounded-md p-2 hover:bg-gray-800 ${client.currentChannel?.channel.id === channel.id ? "bg-gray-800" : ""}`}
 			>
 				{#if channel.type === "Text"}
 					<span class="flex items-center gap-0.5"

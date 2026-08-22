@@ -7,7 +7,7 @@ type Session = {
 	publicKey: Uint8Array;
 	isAdmin: boolean;
 	authToken: string;
-	currentChannel?: Channel;
+	currentChannel?: CurrentChannel;
 	channelList: Channel[];
 	profile?: Profile;
 };
@@ -242,6 +242,16 @@ export interface ServerInfo {
 	public_key: string;
 }
 
+export interface ChannelMember {
+	profile: Profile;
+	socket_id: string;
+}
+
+export interface CurrentChannel {
+	channel: Channel;
+	members: ChannelMember[];
+}
+
 interface ServerToClientEvents {
 	connectionReady(id: string): void;
 	messageReceived(message: Message): void;
@@ -253,7 +263,7 @@ interface ClientToServerEvents {
 	requestChallenge(publicKey: string): ResponseAuthChallenge;
 	confirmChallenge(token: string, signature: string): ResponseConfirmAuthChallenge;
 
-	joinChannel(channelId: string): Channel;
+	joinChannel(channelId: string): CurrentChannel;
 	sendMessage(message: string, attachments: string[]): void;
 	loadMessages(beforeId?: string): Message[];
 
