@@ -21,22 +21,22 @@ pub struct Channel {
 	pub r#type: ChannelType,
 }
 
-#[derive(Debug, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Deserialize)]
 pub struct CreateChannelParams {
 	pub name: String,
 }
 
-#[derive(Debug, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Deserialize)]
 pub struct DeleteChannelParams {
 	pub channel_id: uuid::Uuid,
 }
 
-#[derive(Debug, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Deserialize)]
 pub struct JoinChannelParams {
 	pub channel_id: ChannelIdentifier,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct ChannelMember {
 	pub profile: profile::Profile,
 	pub socket_id: Uuid,
@@ -91,20 +91,37 @@ pub async fn list_channels(app: wspc::App) -> error::Result<Vec<Channel>> {
 pub async fn join_channel(app: wspc::App, socket: wspc::Socket, params: wspc::Params<JoinChannelParams>) -> error::Result<JoinChannelResponse> {
 	let state = app.get_state::<app::AppState>().unwrap();
 
-	if !auth::is_auth(&socket) {
+	let Some(auth) = socket.get_state::<auth::AuthenticatedPayload>() else {
 		return Err(error::Error::Unauthorized);
-	}
+	};
+
+	let Some(profile) = db::get_profile_by_public_key(&state.db_pool, auth.public_key).await? else {
+		return Err(error::Error::ProfileDoesNotExist);
+	};
+
+	let channel: Channel = db::get_channel(&state.db_pool, *params.channel_id).await?.into();
+	let room = app.room(params.channel_id);
+	let sockets = room.sockets();
+
+	let member = ChannelMember {
+		profile: profile.into(),
+		socket_id: socket.id(),
+	};
 
 	if let Some(channel) = socket.get_state::<ChannelIdentifier>() {
+		let room = app.room(channel);
+		let member = member.clone();
+
 		socket.leave(channel)?;
+		room.emit("onChannelMemberLeft", (member,))?;
 	};
+
+	room.emit("onChannelMemberJoined", (member,))?;
+
+	let mut members = Vec::new();
 
 	socket.join(params.channel_id)?;
 	socket.set_state(params.channel_id);
-
-	let channel: Channel = db::get_channel(&state.db_pool, *params.channel_id).await?.into();
-	let sockets = app.room(params.channel_id).sockets();
-	let mut members = Vec::new();
 
 	for socket in sockets {
 		let Some(auth) = socket.get_state::<auth::AuthenticatedPayload>() else { continue };

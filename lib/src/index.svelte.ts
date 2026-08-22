@@ -26,6 +26,8 @@ export class Client {
 	public onConnectionReady?: () => void;
 	public onConnectionClosed?: () => void;
 	public onMessageReceived?: (message: Message) => void;
+	public onChannelMemberJoined?: (member: ChannelMember) => void;
+	public onChannelMemberLeft?: (member: ChannelMember) => void;
 
 	public close: typeof JsonRPCClient.prototype.close;
 
@@ -58,13 +60,26 @@ export class Client {
 			this.onConnectionClosed?.();
 		};
 
+		this._rpc.on("connectionReady", (id) => {
+			this._connectionData = { id };
+			this.onConnectionReady?.();
+		});
+
 		this._rpc.on("messageReceived", (message) => {
 			this.onMessageReceived?.(message);
 		});
 
-		this._rpc.on("connectionReady", (id) => {
-			this._connectionData = { id };
-			this.onConnectionReady?.();
+		this._rpc.on("onChannelMemberJoined", (member) => {
+			this._session!.currentChannel?.members.push(member);
+
+			this.onChannelMemberJoined?.(member);
+		});
+
+		this._rpc.on("onChannelMemberLeft", (member) => {
+			this._session!.currentChannel!.members = this._session!.currentChannel!.members.filter(
+				(m) => m.socket_id !== member.socket_id
+			);
+			this.onChannelMemberLeft?.(member);
 		});
 	}
 
@@ -255,6 +270,8 @@ export interface CurrentChannel {
 interface ServerToClientEvents {
 	connectionReady(id: string): void;
 	messageReceived(message: Message): void;
+	onChannelMemberJoined: (member: ChannelMember) => void;
+	onChannelMemberLeft: (member: ChannelMember) => void;
 	channelDeleted(channel: Channel): void;
 }
 

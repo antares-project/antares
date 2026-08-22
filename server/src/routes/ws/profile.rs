@@ -1,18 +1,18 @@
 use super::*;
 use crate::*;
 
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
 pub struct Profile {
 	pub public_key: crypto::PublicKey,
 	pub name: String,
 }
 
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
 pub struct UpdateProfileParams {
 	pub name: String,
 }
 
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
 pub struct GetProfileParams {
 	pub public_key: Option<crypto::PublicKey>,
 }
